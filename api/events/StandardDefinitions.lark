@@ -1,0 +1,6 @@
+NAME:                      CNAME   
+QUOTED_STRING:               /"[^"]*"/
+%import common.SIGNED_NUMBER    -> NUMBER
+%import common.CNAME    -> CNAME
+%import common.WS       -> WS
+%ignore WS

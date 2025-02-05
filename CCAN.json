@@ -1,0 +1,76 @@
+{
+  "UDP_SERVER":
+  { 
+    "DEFAULT_PORT" : 6005, 
+    "MIN_PORT"     : 6000,
+    "MAX_PORT"     : 6200  
+  },
+  
+  "RESPONSE_WAITING_TIME" : 0.15,
+  "RETRY_WAITING_TIME": 1,
+
+
+  "CONFIGURATION_PATH" : [ "production/gen",           
+                            "test/gen" 
+                          ],
+
+  "CONNECTION_SERVER" : 
+  {
+    "IP_ADDRESS" : "192.168.2.14"
+  },
+
+  "LOG_FILES"  :
+  {
+
+   "PATH" : "production/log",
+   "NUMBER_OF_LOG_FILES" : 5,
+   "MAX_SIZE_MB" : 10
+  },
+
+  "FTP_SERVER" :  
+  {
+    "IP_ADDRESS" : "192.168.2.49",
+    "LOGIN"   :  "ccan",
+    "PASSWORD": "ccan",
+    "TEMPORARY_AUTOMATION_FILE" : "/tmp/automation.pkl"
+  },
+
+
+  "TEST": 
+  {
+    "CONFIGURATION_PATH_SOURCE": "test/py/config",      
+    "CONFIGURATION_PATH_GEN"    : "test/gen",
+    "UDP_SERVER_PORT"           : 6005,
+    "UDP_SERVER_ADDRESS"        : "localhost",
+    "CCAN_INT"                  : "cli/build/ccan_int"
+  },
+                      
+  "FIRMWARE":  [
+    {
+        "controller": "NUCLEO_G474RE",
+        "filename"  : "boards/mbed_applications/cmake_build/NUCLEO_G474RE_FIRMWARE/release/GCC_ARM/ccan_firmware.hex"
+    },
+    {
+      "controller": "LPC4088_IP",
+      "filename" : "boards/lpc4088/build/ccan_firmware_release.hex"
+    }      
+  ],
+
+  "BOOTLOADER":  [
+  {
+      "controller": "NUCLEO_G474RE",
+      "filename"  : "boards/mbed_applications/cmake_build/NUCLEO_G474RE_UPDATER/release/GCC_ARM/ccan_bootloader_updater.hex"
+  },
+  {
+    "controller": "LPC4088_IP",
+    "filename"  : "boards/lpc4088/build/ccan_bootloader_updater_debug.hex"
+  }
+  
+  ],
+
+  "TEXT_OUTPUT": {   
+      "CONTROLLER_NAME_MAX_LENGTH" : 30    
+  }
+
+
+}

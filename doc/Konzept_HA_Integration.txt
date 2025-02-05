@@ -1,0 +1,12 @@
+Welche Informationen werden für eine Entity benötigt:
+
+device_type         -> wird für die "Verteilung" der Devices über die  async_setup_entry Methode benötigt
+name                -> taucht so im Home Assistant auf
+suggested_area      -> Raumzuorndung, Raum muss vorher existieren.
+device_unique_id    -> Eindeutig außerhalb der Integration , z.B. Integrationsname + device_id
+
+
+
+Es gibt eine Instanztabelle für HA-Devices
+
+

@@ -1,0 +1,5 @@
+parameter_list:            [ parameter ("," parameter)* ] 
+parameter:     ([NAME "="] (VALUE | value_list))
+value_list:  "[" VALUE ("," VALUE)* "]"
+VALUE:  NUMBER | QUOTED_STRING | NAME
+

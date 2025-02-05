@@ -1,0 +1,152 @@
+{
+    "$schema": "http://json-schema.org/draft/2019-09/schema",
+    "title": "CCAN Production Config",
+    "type": "object",
+    "required": ["CONFIGURATION_PATH","UDP_SERVER"],
+    "properties":
+    {
+      "UDP_SERVER": 
+      {
+          "type": "object",
+          "properties": 
+          {
+            "DEFAULT_PORT": {
+              "type" : "integer"     
+            },
+            "MAX_PORT": {
+              "type" : "integer"     
+            },
+            "MIN_PORT": {
+              "type" : "integer"     
+            }
+
+          }
+        },
+
+        "TEXT_OUTPUT": 
+        {
+            "type": "object",
+            "properties": 
+            {
+              "CONTROLLER_NAME_MAX_LENGTH": {
+              "type": "integer"
+              }
+            }
+        },  
+
+
+
+        "RESPONSE_WAITING_TIME" :
+        {
+            "type" : "number"
+        },
+
+        "RETRY_WAITING_TIME" :
+        {
+            "type" : "number"
+        },
+
+        "LOG_FILES" :
+          {
+            "PATH": {
+              "type" : "string"     
+            },
+            "ROTATION_STYLE": {
+              "enum": ["daily","weekly","monthly"]     
+            },
+            "ROTATION_DEPTH":
+            {
+              "type": "integer"
+            }
+
+          },
+
+        "FTP_SERVER" : 
+        {
+          "IP_ADDRESS": {
+            "type" : "ipv4"
+          },
+          "LOGIN" : {
+            "type" : "string"
+          },
+          "PASSWORD" : {
+            "type" : "string"
+          },
+          "TEMPORARY_AUTOMATION_FILE" : {
+            "type" : "string"
+          }
+        },
+
+
+        "CONFIGURATION_PATH": {
+          "type" : "array",
+          "items": {
+              "type": "string"
+          }
+
+        },
+        
+        "CONNECTION_SERVER": {
+            "IP_ADDRESS": {
+            "type": "ipv4" 
+            }
+        },
+
+
+        "TEST": {
+          "CONFIGURATION_PATH_SOURCE": {
+            "type" : "string"
+            },
+
+          "CONFIGURATION_PATH_GEN": {
+                  "type": "string" 
+              },
+            "UDP_SERVER_PORT": {              
+                "type" : "integer"     
+              },
+
+          "UDP_SERVER_ADDRESS": {
+            "type" : "ipv4"
+
+          },
+              "CCAN_INT": {
+                "type" : "str"     
+              }
+        },
+
+
+        "FIRMWARE": {
+          "type" : "array",
+          "items": 
+          {
+            "type": "object",
+            "properties": 
+            {
+              "controller": {
+              "type": "string"
+              },
+              "filename": {
+                "type": "string"
+              }            
+            }
+          }
+        },
+
+        "BOOTLOADER": {
+          "type" : "array",
+          "items": 
+          {
+            "type": "object",
+            "properties": 
+            {
+              "controller": {
+              "type": "string"
+              },
+              "filename": {
+                "type": "string"
+              }            
+            }
+          }
+        }
+  }
+}

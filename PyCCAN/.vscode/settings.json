@@ -1,0 +1,19 @@
+{
+    "breadcrumbs.enabled": "yes",
+
+
+    "python.languageServer": "Jedi",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    //"terminal.integrated.env.osx": {"PYTHONPATH": "${workspaceFolder}"}
+    
+    //"python.analysis.extraPaths" : "${workspaceFolder}/PyCCAN",  
+
+    //"python.autoComplete.extraPaths": ["/home/christoph/git/NEW_CCAN"],
+    //"python.envFile": ".env",
+    //"python.analysis.disabled": ["unresolved-import"],
+
+
+
+
+
+}

@@ -1,0 +1,24 @@
+
+Wechselspiel Coordinator <-> Device:
+
+
+Aufgaben Coordinator:
+    Ermitteln aller Devices in der pkl-Datei
+
+    Ermitteln aller Events, die der Coordinator empfangen soll
+
+
+
+Aufgaben Device:
+
+    async_setup:
+        
+    @class:
+    * Liefern die Events, die das Device empfängt an den Coordinator
+    * Sammelt die Devices, die instanziiert werden sollen
+    * instanziiert die Devices (hält Liste vor)
+    * Reaktion auf Device, Aufruf der Instanzmethoden
+
+    Vorgeschriebene Methoden für das Device:
+    @instance:
+

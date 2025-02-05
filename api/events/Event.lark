@@ -1,0 +1,5 @@
+event
+event:                       (device_event|application_event|hcan_event)
+device_event:                ( NAME      NAME("." NAME)*     "::" NAME "(" parameter_list ")")
+application_event:           (           NAME     "::" NAME "(" parameter_list ")")
+hcan_event:                  ("HCAN" "(" QUOTED_STRING ")" "::" NAME "(" parameter_list ")")
