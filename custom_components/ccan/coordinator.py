@@ -40,24 +40,10 @@ os.environ["CCAN"] = cwd
 if cwd not in sys.path:
     sys.path.insert(1, cwd)
 
-
-# os.environ["CCAN"] = os.path.join(pathlib.Path(__file__).parent.resolve())
-# a = os.path.join(pathlib.Path(__file__).parent.resolve(), "PyCCAN")
-
 from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 from api.connect.Connector import Connector
 from api.cli.interactions.automation.AutomationBase import AutomationBase
 from api.HA_Integration.HA_Library import HA_Library
-
-# from api.base.Report import Report, ReportLevel
-# from api.resolver.ResolverElements import ResolvedDeviceInstance
-
-
-# from .PyCCAN.api.cli.interactions import Interaction
-# from PyCCAN.api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-# from PyCCAN.Connector import Connector
-# from PyCCAN.api.cli.interactions.automation.AutomationBase import AutomationBase
-# from .PyCCAN.api.base.Report import Report, ReportLevel
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -123,8 +109,11 @@ class CCAN_Coordinator(DataUpdateCoordinator):
         return connector.is_connected()
 
     async def connect(self):
+        _LOGGER.info("Create Connector")
         self.connector = await asyncio.to_thread(Connector, self.host, self.port)
+        _LOGGER.info("..connect")
         await asyncio.to_thread(self.connector.connect)
+        _LOGGER.info("..connect done")
         if self.connector.is_connected():
             _LOGGER.info(
                 "CCAN Integration connected to CCAN server using CCAN address %d",

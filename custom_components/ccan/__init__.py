@@ -37,7 +37,7 @@ class RuntimeData:
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Set up Example Integration from a config entry."""
 
-    print("bin in async_setup_entry")
+    _LOGGER.info("bin in async_setup_entry")
 
     hass.data.setdefault(DOMAIN, {})
 
@@ -71,14 +71,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     )
 
     # Setup platforms (based on the list of entity types in PLATFORMS defined above)
-    # This calls the async_setup method in each of your entity type files.
-    if False:
-        for platform in PLATFORMS:
-            hass.async_create_task(
-                hass.config_entries.async_forward_entry_setup(config_entry, platform)
-            )
-    else:
-        await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
+    # This calls the async_setup method in each of your entity type files.   
+    await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
     # Return true to denote a successful setup.
     return True
