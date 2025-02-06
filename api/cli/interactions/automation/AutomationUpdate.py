@@ -1,18 +1,18 @@
 import time
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
-from src.cli.interactions.controller.Reset import Reset
-from src.cli.interactions.controller.Lock import Lock
-from src.cli.interactions.broadcast.BroadcastReset import BroadcastReset
-from src.cli.interactions.broadcast.BroadcastLock import BroadcastLock
-from src.cli.interactions.automation.AutomationWaitForBootloaderStart import AutomationWaitForBootloaderStart
-from src.cli.interactions.controller.WaitForFirmware import WaitForFirmware
-from src.cli.interactions.controller.WaitForBootloader import WaitForBootloader
-from src.cli.download.DownloadRobot import DownloadRobot
-from src.base.PlatformServices import PlatformServices
-from src.PyCCAN_Warnings import CCAN_Warnings
+from api.cli.interactions.controller.Reset import Reset
+from api.cli.interactions.controller.Lock import Lock
+from api.cli.interactions.broadcast.BroadcastReset import BroadcastReset
+from api.cli.interactions.broadcast.BroadcastLock import BroadcastLock
+from api.cli.interactions.automation.AutomationWaitForBootloaderStart import AutomationWaitForBootloaderStart
+from api.cli.interactions.controller.WaitForFirmware import WaitForFirmware
+from api.cli.interactions.controller.WaitForBootloader import WaitForBootloader
+from api.cli.download.DownloadRobot import DownloadRobot
+from api.base.PlatformServices import PlatformServices
+from api.PyCCAN_Warnings import CCAN_Warnings
 
 class AutomationUpdate(AutomationInteraction): 
     def __init__(self, my_connector, my_waiting_time, my_retries,my_target_automation, my_enforce_flag, my_automation_file):         

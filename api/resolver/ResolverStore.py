@@ -19,7 +19,7 @@ from .ResolverElements import MappingType
 from .ResolverElements import ProtocolType
 from .ResolverElements import ResolvedProtocolInstance
 from .ResolverError import ResolverError
-from src.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformDefaults import PlatformDefaults
 
 
 

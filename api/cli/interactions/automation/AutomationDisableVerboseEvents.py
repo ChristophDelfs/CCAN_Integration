@@ -1,5 +1,5 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class AutomationDisableVerboseEvents(AutomationInteraction):
     def __init__(self, my_connector, my_waiting_time, my_retries, my_automation_file): 

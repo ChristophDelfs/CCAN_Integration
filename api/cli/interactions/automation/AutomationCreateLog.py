@@ -1,5 +1,5 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.Report import Report, ReportLevel
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.Report import Report, ReportLevel
 import signal
 import os
 

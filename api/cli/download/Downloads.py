@@ -4,15 +4,15 @@ from pathlib import Path
 import abc
 
 
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.PyCCAN_Writer import Writer
-from src.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
-from src.PyCCAN_Writer import Writer
-from src.PyCCAN_ConvertBinary import SequenceCreator
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.PyCCAN_Writer import Writer
+from api.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
+from api.PyCCAN_Writer import Writer
+from api.PyCCAN_ConvertBinary import SequenceCreator
 from intelhex import IntelHex
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.base.PlatformDefaults import PlatformDefaults
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.base.PlatformDefaults import PlatformDefaults
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 
 class DownloadItem(metaclass=abc.ABCMeta):

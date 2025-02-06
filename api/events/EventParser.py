@@ -1,8 +1,8 @@
 import os
 import lark
 from lark.visitors import Transformer
-from src.resolver.ResolverError import ResolverError
-from src.events.RawEvent import AddressingType
+from api.resolver.ResolverError import ResolverError
+from api.events.RawEvent import AddressingType
 
 
 @lark.v_args(inline=True)

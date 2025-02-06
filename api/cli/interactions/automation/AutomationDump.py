@@ -1,7 +1,7 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
 import signal
-from src.base.Report import Report, ReportLevel
-from src.events.HCAN_Event import HCAN_Event
+from api.base.Report import Report, ReportLevel
+from api.events.HCAN_Event import HCAN_Event
 
 class AutomationDump(AutomationInteraction): 
     def __init__(self, my_connector, my_waiting_time, my_retries, my_filter, my_automation_file): 

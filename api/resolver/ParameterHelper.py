@@ -1,6 +1,6 @@
 import ipaddress
 from enum import Enum
-from src.resolver.ResolverElements import ParameterFormat
+from api.resolver.ResolverElements import ParameterFormat
 
 class ConstraintType(Enum):
     MIN_MAX = 0

@@ -1,9 +1,9 @@
 import os
-from src.resolver.resolver_elements.ResolverElement import ResolverElement
+from api.resolver.resolver_elements.ResolverElement import ResolverElement
 
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.base.PlatformConfiguration import PlatformConfiguration
-from src.resolver.ResolverError import ResolverError
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.base.PlatformConfiguration import PlatformConfiguration
+from api.resolver.ResolverError import ResolverError
 
 
 

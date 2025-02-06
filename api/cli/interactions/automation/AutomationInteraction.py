@@ -1,10 +1,10 @@
 import signal
-from src.base.Report import Report, ReportLevel
-from src.cli.interactions.Interaction import Interaction
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-from src.base.PlatformDefaults import PlatformDefaults
-from src.cli.interactions.automation.AutomationBase import AutomationBase
-from src.cli.interactions.Interaction import Interaction
+from api.base.Report import Report, ReportLevel
+from api.cli.interactions.Interaction import Interaction
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.PlatformDefaults import PlatformDefaults
+from api.cli.interactions.automation.AutomationBase import AutomationBase
+from api.cli.interactions.Interaction import Interaction
 import time
 import sys
 

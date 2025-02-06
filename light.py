@@ -1,7 +1,4 @@
 from __future__ import annotations
-import os
-import sys
-
 
 """Platform for light integration."""
 
@@ -31,15 +28,7 @@ from homeassistant.config_entries import ConfigEntry
 from .const import DOMAIN
 
 
-# add PyCCAN to
-additional_path = "/workspaces/core/share/CCAN/PyCCAN"
-ccan_path = "/workspaces/core/share/CCAN"
-if additional_path not in sys.path:
-    sys.path.insert(1, additional_path)
-os.environ["CCAN"] = ccan_path
-
-
-from src.resolver.ResolverElements import ResolvedHomeAssistantDeviceInstance
+from .api.resolver.ResolverElements import ResolvedHomeAssistantDeviceInstance
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -100,7 +89,7 @@ async def async_setup_entry(
 
     # Add Lights to HA:
     async_add_entities(lights)
-    _LOGGER.info("Added %d lights",len(lights))
+    _LOGGER.info("Added %d lights", len(lights))
 
 
 class CCAN_Light(CoordinatorEntity, LightEntity):

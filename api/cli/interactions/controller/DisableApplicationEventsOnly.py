@@ -1,4 +1,4 @@
-from src.cli.interactions.controller.SimpleInteraction import SimpleInteraction
+from api.cli.interactions.controller.SimpleInteraction import SimpleInteraction
 
 class DisableApplicationEventsOnly(SimpleInteraction): 
     def __init__(self, my_connector, my_retries):    

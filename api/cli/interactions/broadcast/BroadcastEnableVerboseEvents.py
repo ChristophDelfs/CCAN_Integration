@@ -1,6 +1,6 @@
-from src.cli.interactions.broadcast.BroadcastInteraction import BroadcastInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.broadcast.BroadcastInteraction import BroadcastInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class BroadcastEnableVerboseEvents(BroadcastInteraction): 
     def __init__(self, my_connector, my_waiting_time, my_retries): 

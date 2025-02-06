@@ -1,14 +1,14 @@
 import os
-from src.cli.interactions.broadcast.BroadcastBoardInfo import BroadcastBoardInfo
-from src.cli.interactions.broadcast.BroadcastVersion import BroadcastVersion
-from src.cli.interactions.broadcast.BroadcastConfigurationInformation import (
+from api.cli.interactions.broadcast.BroadcastBoardInfo import BroadcastBoardInfo
+from api.cli.interactions.broadcast.BroadcastVersion import BroadcastVersion
+from api.cli.interactions.broadcast.BroadcastConfigurationInformation import (
     BroadcastConfigurationInformation,
 )
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.base.Report import Report, ReportLevel
 
-from src.base.PlatformServices import PlatformServices
+from api.base.PlatformServices import PlatformServices
 
 
 class AutomationBase:

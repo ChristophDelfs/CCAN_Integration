@@ -1,6 +1,6 @@
-from src.cli.interactions.Interaction import Interaction
-from src.base.Report import Report, ReportLevel
-from src.cli.interactions.controller.SwID import SwID
+from api.cli.interactions.Interaction import Interaction
+from api.base.Report import Report, ReportLevel
+from api.cli.interactions.controller.SwID import SwID
 import time
 
 

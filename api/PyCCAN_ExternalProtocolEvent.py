@@ -1,4 +1,4 @@
-from ..src.events.RawEvent import AddressingType, RawEvent
+from ..api.events.RawEvent import AddressingType, RawEvent
 
 
 class ExternalProtocolEvent(RawEvent):

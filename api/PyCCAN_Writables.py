@@ -1,6 +1,6 @@
 
 
-from src.resolver.ResolverElements import ResolvedParameter, ParameterFormat
+from api.resolver.ResolverElements import ResolvedParameter, ParameterFormat
     
 class Writeable():
     def __init__(self):

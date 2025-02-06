@@ -2,7 +2,7 @@ import binascii
 import pickle
 
 
-# from src.PyCCAN_Compiler import Compiler
+# from api.PyCCAN_Compiler import Compiler
 
 
 class CCAN_Defaults:

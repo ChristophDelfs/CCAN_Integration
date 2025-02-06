@@ -1,5 +1,5 @@
-from src.cli.interactions.Interaction import Interaction
-from src.base.Report import Report, ReportLevel
+from api.cli.interactions.Interaction import Interaction
+from api.base.Report import Report, ReportLevel
 import time
 import signal
 

@@ -115,7 +115,7 @@ from .ResolverElements import get_automatic_parameter_variable_prefix
 from .ResolverElements import DriverClassType
 from .ParameterStore import ParameterStore
 from .ResolverError import ResolverError
-from src.PyCCAN_Warnings import CCAN_Warnings
+from api.PyCCAN_Warnings import CCAN_Warnings
 
 from .ResolverStore import ResolverStore
 

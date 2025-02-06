@@ -1,5 +1,5 @@
-from src.cli.interactions.Interaction import Interaction
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.Interaction import Interaction
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class SetBoardLED(Interaction): 
     def __init__(self, my_connector,my_retries, my_led_name, my_new_status):            

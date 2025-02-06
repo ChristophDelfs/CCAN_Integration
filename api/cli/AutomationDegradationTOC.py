@@ -1,5 +1,5 @@
-from src.resolver.Definitions import ElementTypes
-from src.base.PlatformDefaults import PlatformDefaults
+from api.resolver.Definitions import ElementTypes
+from api.base.PlatformDefaults import PlatformDefaults
 from collections import namedtuple
 
 

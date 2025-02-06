@@ -1,6 +1,6 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class AutomationWaitForBootloaderStart(AutomationInteraction): 
     def __init__(self, my_connector, my_waiting_time, my_retries, bootloader_expected): 

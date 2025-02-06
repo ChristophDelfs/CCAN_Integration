@@ -1,7 +1,7 @@
 #
 #
 
-from src.PyCCAN_Warnings import CCAN_Warnings
+from api.PyCCAN_Warnings import CCAN_Warnings
 
 
 class ConfigurationValidator:

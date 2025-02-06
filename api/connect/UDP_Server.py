@@ -5,15 +5,15 @@ from threading import Event
 from threading import Lock
 
 import logging
-# from src.UDP_Client import UDP_Client
+# from api.UDP_Client import UDP_Client
 
 from .SocketConnect import SocketConnect
 from .AddressManager import AddressManager
 
 from .ServerService import ServerService
-from src.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformDefaults import PlatformDefaults
 
-from src.base.PlatformConfiguration import PlatformConfiguration
+from api.base.PlatformConfiguration import PlatformConfiguration
 
 
 class UDP_Server:

@@ -1,11 +1,11 @@
 import time
 
-from src.cli.interactions.broadcast.BroadcastInteraction import BroadcastInteraction
+from api.cli.interactions.broadcast.BroadcastInteraction import BroadcastInteraction
 
-# from .....src.base.PlatformServices import PlatformServices
-from src.base.PlatformDefaults import PlatformDefaults
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+# from .....api.base.PlatformServices import PlatformServices
+from api.base.PlatformDefaults import PlatformDefaults
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 
 class BroadcastConfigurationInformation(BroadcastInteraction):

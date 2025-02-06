@@ -1,16 +1,16 @@
-from src.resolver.ResolverError import ResolverError
+from api.resolver.ResolverError import ResolverError
 #from lark import Lark, InlineTransformer
 from lark import Lark, Visitor
-from src.resolver.Definitions import CompilerMode,ParameterSet, LocationInfo
+from api.resolver.Definitions import CompilerMode,ParameterSet, LocationInfo
 
-from src.resolver.Definitions import OperatorTypeKey,Operator, ParsedVariableInExpression, ElementTypeKey, OperandTypeKey, ParsedSymbol
+from api.resolver.Definitions import OperatorTypeKey,Operator, ParsedVariableInExpression, ElementTypeKey, OperandTypeKey, ParsedSymbol
 from numbers import Number
 
-from src.resolver.ResolverError import ResolverError
+from api.resolver.ResolverError import ResolverError
 
-from src.resolver.ResolverElements import ResolvedParameter, ParameterFormat
-from src.resolver.ResolverElements import EventVariable, SerializedFunctionExpression, Function, FunctionExpression
-from src.resolver.ResolverElements import ResolvedFunctionElement, ResolvedConstantElement, ResolvedVariableElement, ResolvedEventParameterElement, ResolvedSymbol
+from api.resolver.ResolverElements import ResolvedParameter, ParameterFormat
+from api.resolver.ResolverElements import EventVariable, SerializedFunctionExpression, Function, FunctionExpression
+from api.resolver.ResolverElements import ResolvedFunctionElement, ResolvedConstantElement, ResolvedVariableElement, ResolvedEventParameterElement, ResolvedSymbol
 
        
 class ParameterStore(Visitor): #InlineTransformer):

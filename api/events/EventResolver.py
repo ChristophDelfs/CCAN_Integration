@@ -2,19 +2,19 @@ import binascii
 import pickle
 from collections import namedtuple
 
-# from src.UDP_Client import UDP_Client
+# from api.UDP_Client import UDP_Client
 
-from src.resolver.Definitions import ParamListInfo
-from src.resolver.Definitions import EventDescriptor
+from api.resolver.Definitions import ParamListInfo
+from api.resolver.Definitions import EventDescriptor
 
-from src.events.EventParser import CLI_EventParser
-from src.events.RawEvent import RawEvent
-from src.events.ApplicationEvent import ApplicationEvent
-from src.events.DeviceEvent import DeviceEvent
-from src.events.HCAN_Event import HCAN_Event
-from src.cli.CliError import CliError as CliError
-from src.cli.CliError import CliErrorCode as CliErrorCode
-from src.base.PlatformDefaults import PlatformDefaults
+from api.events.EventParser import CLI_EventParser
+from api.events.RawEvent import RawEvent
+from api.events.ApplicationEvent import ApplicationEvent
+from api.events.DeviceEvent import DeviceEvent
+from api.events.HCAN_Event import HCAN_Event
+from api.cli.CliError import CliError as CliError
+from api.cli.CliError import CliErrorCode as CliErrorCode
+from api.base.PlatformDefaults import PlatformDefaults
 
 
 class EventResolver:

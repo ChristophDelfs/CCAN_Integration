@@ -3,7 +3,7 @@ import argparse
 import socket
 import struct
 
-from src.cli.interactions.automation.AutomationBase import AutomationBase
+from api.cli.interactions.automation.AutomationBase import AutomationBase
 
 
 ''''
@@ -17,7 +17,7 @@ Function automatically connects to the running automation and logs the data.
 
 
 # CCAN:
-from src.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformDefaults import PlatformDefaults
 
 #
 # USED INTERACTIONS:
@@ -26,14 +26,14 @@ from src.base.PlatformDefaults import PlatformDefaults
 
 # automation interactions:
 
-from src.cli.interactions.automation.AutomationDump import AutomationDump
+from api.cli.interactions.automation.AutomationDump import AutomationDump
 
 # additional imports:
-from src.base.PlatformConfiguration import PlatformConfiguration
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error
+from api.base.PlatformConfiguration import PlatformConfiguration
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error
 
-from src.connect.Connector import Connector
+from api.connect.Connector import Connector
 
 
 class IP_AddressRange:

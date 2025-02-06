@@ -1,6 +1,6 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class SimpleAutomationInteraction(AutomationInteraction): 
     def __init__(self, my_cli, my_waiting_time, my_retries, my_automation_file, my_request, my_answer, my_success_message, my_method= None): 

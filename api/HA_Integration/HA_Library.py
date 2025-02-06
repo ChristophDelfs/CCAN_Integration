@@ -1,4 +1,4 @@
-from src.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformDefaults import PlatformDefaults
 
 
 class HA_Library:

@@ -1,6 +1,6 @@
-from src.cli.interactions.automation.SimpleAutomationInteraction import SimpleAutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.automation.SimpleAutomationInteraction import SimpleAutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 """
         Function ships an event to the connected target.

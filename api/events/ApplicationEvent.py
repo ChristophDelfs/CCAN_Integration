@@ -1,8 +1,8 @@
-from src.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
-from src.events.RawEvent import RawEvent
-from src.events.Parameters import Parameters
-from src.base.PlatformDefaults import PlatformDefaults
-from src.resolver.Definitions import Colors, NoColors
+from api.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
+from api.events.RawEvent import RawEvent
+from api.events.Parameters import Parameters
+from api.base.PlatformDefaults import PlatformDefaults
+from api.resolver.Definitions import Colors, NoColors
 
 import time
 

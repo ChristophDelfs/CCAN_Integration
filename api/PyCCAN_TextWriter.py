@@ -1,7 +1,7 @@
 # Interface for PyCCAN Writer:
-from src.PyCCAN_Writer import Writer
-from src.resolver.Definitions import TextWriterOutput,TextWriterDevice, TextParameterSet,TextMappingDescriptor , TextEventDescriptor,TextMappingRuleDescriptor
-from src.resolver.ResolverElements import ParameterFormat
+from api.PyCCAN_Writer import Writer
+from api.resolver.Definitions import TextWriterOutput,TextWriterDevice, TextParameterSet,TextMappingDescriptor , TextEventDescriptor,TextMappingRuleDescriptor
+from api.resolver.ResolverElements import ParameterFormat
 import pprint
 from io import StringIO
 #from PyCCAN_Resolver import Resolved_Expression

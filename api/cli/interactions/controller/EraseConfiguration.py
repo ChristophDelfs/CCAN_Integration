@@ -1,5 +1,5 @@
-from src.cli.interactions.controller.SimpleInteraction import SimpleInteraction
-from src.cli.interactions.controller.Reset import Reset
+from api.cli.interactions.controller.SimpleInteraction import SimpleInteraction
+from api.cli.interactions.controller.Reset import Reset
 import time
 
 class EraseConfiguration(SimpleInteraction): 

@@ -1,6 +1,6 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.events.RawEvent import RawEvent
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.events.RawEvent import RawEvent
 import os
 
 from signal import signal, SIGPIPE, SIG_DFL

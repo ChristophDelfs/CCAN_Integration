@@ -1,4 +1,4 @@
-from src.cli.interactions.broadcast.SimpleBroadcastInteraction import SimpleBroadcastInteraction
+from api.cli.interactions.broadcast.SimpleBroadcastInteraction import SimpleBroadcastInteraction
 
 class BroadcastEraseConfiguration(SimpleBroadcastInteraction): 
     def __init__(self, my_connector, my_waiting_time, my_retries): 

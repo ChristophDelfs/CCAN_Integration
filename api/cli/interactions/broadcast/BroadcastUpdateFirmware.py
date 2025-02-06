@@ -1,10 +1,10 @@
-from src.cli.interactions.broadcast.BroadcastInteraction import BroadcastInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.PlatformServices import PlatformServices
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.cli.interactions.broadcast.BroadcastPing import BroadcastPing
-from src.cli.interactions.controller.UpdateFirmware import UpdateFirmware
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.broadcast.BroadcastInteraction import BroadcastInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.PlatformServices import PlatformServices
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.cli.interactions.broadcast.BroadcastPing import BroadcastPing
+from api.cli.interactions.controller.UpdateFirmware import UpdateFirmware
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 import time
 
 class BroadcastUpdateFirmware(BroadcastInteraction): 

@@ -3,10 +3,10 @@ import os
 import time
 from pathlib import Path
 
-from src.base.CCAN_Error import CCAN_Error
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.base.PlatformConfiguration import PlatformConfiguration
-from src.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.base.PlatformConfiguration import PlatformConfiguration
+from api.base.Report import Report, ReportLevel
 
 
 class Interaction:

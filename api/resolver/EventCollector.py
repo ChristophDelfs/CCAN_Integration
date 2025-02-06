@@ -1,4 +1,4 @@
-from src.resolver.ResolverError import ResolverError
+from api.resolver.ResolverError import ResolverError
 import copy
 import queue
 

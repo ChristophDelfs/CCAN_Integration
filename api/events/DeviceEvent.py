@@ -1,9 +1,9 @@
 import time
 
-from src.events.RawEvent import RawEvent
-from src.events.Parameters import Parameters
-from src.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
-from src.resolver.Definitions import Colors, NoColors
+from api.events.RawEvent import RawEvent
+from api.events.Parameters import Parameters
+from api.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
+from api.resolver.Definitions import Colors, NoColors
 
 
 class DeviceEvent(RawEvent):

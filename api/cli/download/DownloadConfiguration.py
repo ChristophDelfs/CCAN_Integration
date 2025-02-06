@@ -1,7 +1,7 @@
 import binascii
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.PyCCAN_Writer import Writer
-from src.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.PyCCAN_Writer import Writer
+from api.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
 import os
 
 

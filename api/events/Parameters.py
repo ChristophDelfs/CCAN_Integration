@@ -1,6 +1,6 @@
-from src.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
-from src.resolver.Definitions import Colors, NoColors
-from src.resolver.ResolverElements import ParameterFormat
+from api.PyCCAN_ConvertBinary import SequenceExtractor, SequenceCreator
+from api.resolver.Definitions import Colors, NoColors
+from api.resolver.ResolverElements import ParameterFormat
 
 
 class ParameterIterator:    

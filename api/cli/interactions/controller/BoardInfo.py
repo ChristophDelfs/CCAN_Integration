@@ -1,7 +1,7 @@
-from src.cli.interactions.Interaction import Interaction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-from src.base.PlatformServices import PlatformServices
+from api.cli.interactions.Interaction import Interaction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.PlatformServices import PlatformServices
 
 class BoardInfo(Interaction): 
     def __init__(self, my_connector, my_retries):    

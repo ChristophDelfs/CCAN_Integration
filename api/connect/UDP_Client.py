@@ -5,10 +5,10 @@ import logging
 from threading import Thread
 from threading import Event
 from .SocketConnect import SocketConnect
-from src.base.PlatformDefaults import PlatformDefaults
-from src.base.PlatformConfiguration import PlatformConfiguration
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformConfiguration import PlatformConfiguration
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 _LOGGER = logging.getLogger(__name__)
 

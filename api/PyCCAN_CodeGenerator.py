@@ -263,7 +263,7 @@ class CodeGenerator():
     def header_cog_make_device_parameters(self):
         
         output  = "/* [[[cog\n"  
-        output += "from src.PyCCAN_CodeGenerator import CodeGenerator\n"
+        output += "from api.PyCCAN_CodeGenerator import CodeGenerator\n"
         output += "gen = CodeGenerator()\n"
         output += "output = gen.header_make_device_parameters()\n"
         output += "cog.outl(output)\n"
@@ -343,7 +343,7 @@ class CodeGenerator():
 
     def cpp_cog_make_event_section(self):            
         output  = "/* [[[cog\n"  
-        output += "from src.PyCCAN_CodeGenerator import CodeGenerator\n"
+        output += "from api.PyCCAN_CodeGenerator import CodeGenerator\n"
         output += "gen = CodeGenerator()\n"
         output += "output = gen.cpp_make_event_section()\n"
         output += "cog.outl(output)\n"
@@ -364,7 +364,7 @@ class CodeGenerator():
         output = gen_device.class_name + "::" + gen_device.class_name + "()\n"             
         output += "{\n\n"
         output += "/* [[[cog\n"  
-        output += "from src.PyCCAN_CodeGenerator import CodeGenerator\n"
+        output += "from api.PyCCAN_CodeGenerator import CodeGenerator\n"
         output += "gen = CodeGenerator()\n"
         output += "output = gen.cpp_make_constructor_start()\n"
         output += "cog.outl(output)\n"
@@ -386,7 +386,7 @@ class CodeGenerator():
         output  = "void " + gen_device.class_name  + "::set_config(char* &config, Engine& my_engine)\n{\n"
 
         output += "    /* [[[cog\n"  
-        output += "    from src.PyCCAN_CodeGenerator import CodeGenerator\n"
+        output += "    from api.PyCCAN_CodeGenerator import CodeGenerator\n"
         output += "    gen = CodeGenerator()\n"
         output += "    output = gen.cpp_make_set_config()\n"
         output += "    cog.outl(output)\n "

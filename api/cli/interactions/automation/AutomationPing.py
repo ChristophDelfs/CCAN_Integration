@@ -1,8 +1,8 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
 
-from src.base.PlatformServices import PlatformServices
-from src.base.PlatformDefaults import PlatformDefaults
-from src.base.Report import Report, ReportLevel
+from api.base.PlatformServices import PlatformServices
+from api.base.PlatformDefaults import PlatformDefaults
+from api.base.Report import Report, ReportLevel
 import time
 import signal
 

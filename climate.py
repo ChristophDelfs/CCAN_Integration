@@ -2,8 +2,6 @@
 
 import logging
 from typing import Any
-import os
-import sys
 import asyncio
 
 # from ccm15 import CCM15DeviceState
@@ -44,17 +42,8 @@ from .coordinator import CCAN_Coordinator
 from homeassistant.config_entries import ConfigEntry
 
 
-from random import randint
-
-# add PyCCAN to
-additional_path = "/workspaces/core/share/CCAN/PyCCAN"
-ccan_path = "/workspaces/core/share/CCAN"
-if additional_path not in sys.path:
-    sys.path.insert(1, additional_path)
-os.environ["CCAN"] = ccan_path
-
-from src.base.PlatformDefaults import PlatformDefaults
-from src.resolver.ResolverElements import ResolvedHomeAssistantDeviceInstance
+from .api.base.PlatformDefaults import PlatformDefaults
+from .api.resolver.ResolverElements import ResolvedHomeAssistantDeviceInstance
 
 _LOGGER = logging.getLogger(__name__)
 

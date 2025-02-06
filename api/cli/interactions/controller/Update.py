@@ -2,11 +2,11 @@ import os
 import time
 import math
 
-from src.cli.interactions.Interaction import Interaction
-from src.cli.download.DownloadRobot import DownloadRobot
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-from src.base.Report import Report, ReportLevel
-from src.cli.interactions.controller.Reset import Reset
+from api.cli.interactions.Interaction import Interaction
+from api.cli.download.DownloadRobot import DownloadRobot
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.Report import Report, ReportLevel
+from api.cli.interactions.controller.Reset import Reset
 
 class Update(Interaction): 
     def __init__(self, my_connector, my_retries, my_filename, my_enforce_flag):    

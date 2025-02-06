@@ -1,8 +1,8 @@
-from src.cli.interactions.automation.AutomationInteraction import AutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.PlatformServices import PlatformServices
+from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.PlatformServices import PlatformServices
 import time
-from src.cli.AutomationDegradationTOC import AutomationDegradationTOC
+from api.cli.AutomationDegradationTOC import AutomationDegradationTOC
 
 class AutomationDegradationStatus(AutomationInteraction): 
     def __init__(self,  my_connector, my_waiting_time, my_retries, my_automation_file):                 

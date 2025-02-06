@@ -1,6 +1,6 @@
 from pathlib import Path
-from src.cli.CliError import CliError, CliErrorCode
-from src.cli.download.Downloads import DownloadImage, DownloadConfiguration
+from api.cli.CliError import CliError, CliErrorCode
+from api.cli.download.Downloads import DownloadImage, DownloadConfiguration
 
 class DownloadInfo():
     def __init__(self):

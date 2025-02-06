@@ -1,8 +1,8 @@
-from src.resolver.ResolverError import ResolverError
+from api.resolver.ResolverError import ResolverError
 from lark import Lark, InlineTransformer
-from src.resolver.Definitions import ParamListInfo, CompilerMode,ParameterSet
+from api.resolver.Definitions import ParamListInfo, CompilerMode,ParameterSet
 
-from src.resolver.ResolverError import ResolverError
+from api.resolver.ResolverError import ResolverError
 from collections import namedtuple
 from enum import Enum
 from numbers import Number

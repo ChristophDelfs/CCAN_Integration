@@ -1,6 +1,6 @@
-from src.cli.interactions.Interaction import Interaction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.Interaction import Interaction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class DS1820SetReadTimings(Interaction): 
     def __init__(self, my_connector, my_retries, my_pulldown_period, my_floating_period_before_sampling, my_floating_period_after_sampling, my_recovery_period):    

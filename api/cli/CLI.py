@@ -4,93 +4,93 @@ import socket
 import time
 
 # CCAN:
-from src.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformDefaults import PlatformDefaults
 
 #
 # USED INTERACTIONS:
 #
 
 # controller interactions:
-from src.cli.interactions.controller.Ping import Ping
-from src.cli.interactions.controller.Ping  import Interaction
-from src.cli.interactions.controller.Memory import Memory
-from src.cli.interactions.controller.ProcessorLoad import ProcessorLoad
-from src.cli.interactions.controller.BoardInfo import BoardInfo
-from src.cli.interactions.controller.SetBoardLED import SetBoardLED
-from src.cli.interactions.controller.SwID import SwID
-from src.cli.interactions.controller.Lock import Lock
-from src.cli.interactions.controller.Reset import Reset
-from src.cli.interactions.controller.ConfigurationInformation import ConfigurationInformation
-from src.cli.interactions.controller.Version import Version
-from src.cli.interactions.controller.Update import Update
-from src.cli.interactions.controller.EnableVerboseEvents import EnableVerboseEvents
-from src.cli.interactions.controller.DisableVerboseEvents import DisableVerboseEvents
-from src.cli.interactions.controller.UpdateFirmware import UpdateFirmware
-from src.cli.interactions.controller.UpdateBootloader import UpdateBootloader
-from src.cli.interactions.controller.WriteFirmware import WriteFirmware
-from src.cli.interactions.controller.EnableApplicationEventsOnly import EnableApplicationEventsOnly
-from src.cli.interactions.controller.DisableApplicationEventsOnly import DisableApplicationEventsOnly
-from src.cli.interactions.controller.DetectDS1820 import DetectDS1820
-from src.cli.interactions.controller.DetectExpander import DetectExpander
-from src.cli.interactions.controller.InitializeExpander import InitializeExpander
-from src.cli.interactions.controller.EraseConfiguration import EraseConfiguration
-from src.cli.interactions.controller.ProcessorLoad import ProcessorLoad
-from src.cli.interactions.controller.DS1820SetReadTimings import DS1820SetReadTimings
-from src.cli.interactions.controller.DS1820RequestMeasurement import DS1820RequestMeasurement
-from src.cli.interactions.controller.DS1820ReadMeasurement import DS1820ReadMeasurement
-from src.cli.interactions.controller.GetEngineThreadFailures import GetEngineThreadFailures
-from src.cli.interactions.controller.UpTime import UpTime
-from src.cli.interactions.controller.DebugEvenTestt import DebugEventTest
+from api.cli.interactions.controller.Ping import Ping
+from api.cli.interactions.controller.Ping  import Interaction
+from api.cli.interactions.controller.Memory import Memory
+from api.cli.interactions.controller.ProcessorLoad import ProcessorLoad
+from api.cli.interactions.controller.BoardInfo import BoardInfo
+from api.cli.interactions.controller.SetBoardLED import SetBoardLED
+from api.cli.interactions.controller.SwID import SwID
+from api.cli.interactions.controller.Lock import Lock
+from api.cli.interactions.controller.Reset import Reset
+from api.cli.interactions.controller.ConfigurationInformation import ConfigurationInformation
+from api.cli.interactions.controller.Version import Version
+from api.cli.interactions.controller.Update import Update
+from api.cli.interactions.controller.EnableVerboseEvents import EnableVerboseEvents
+from api.cli.interactions.controller.DisableVerboseEvents import DisableVerboseEvents
+from api.cli.interactions.controller.UpdateFirmware import UpdateFirmware
+from api.cli.interactions.controller.UpdateBootloader import UpdateBootloader
+from api.cli.interactions.controller.WriteFirmware import WriteFirmware
+from api.cli.interactions.controller.EnableApplicationEventsOnly import EnableApplicationEventsOnly
+from api.cli.interactions.controller.DisableApplicationEventsOnly import DisableApplicationEventsOnly
+from api.cli.interactions.controller.DetectDS1820 import DetectDS1820
+from api.cli.interactions.controller.DetectExpander import DetectExpander
+from api.cli.interactions.controller.InitializeExpander import InitializeExpander
+from api.cli.interactions.controller.EraseConfiguration import EraseConfiguration
+from api.cli.interactions.controller.ProcessorLoad import ProcessorLoad
+from api.cli.interactions.controller.DS1820SetReadTimings import DS1820SetReadTimings
+from api.cli.interactions.controller.DS1820RequestMeasurement import DS1820RequestMeasurement
+from api.cli.interactions.controller.DS1820ReadMeasurement import DS1820ReadMeasurement
+from api.cli.interactions.controller.GetEngineThreadFailures import GetEngineThreadFailures
+from api.cli.interactions.controller.UpTime import UpTime
+from api.cli.interactions.controller.DebugEvenTestt import DebugEventTest
 
 # broadcast interactions:
-from src.cli.interactions.broadcast.BroadcastPing import BroadcastPing
-from src.cli.interactions.broadcast.BroadcastBoardInfo import BroadcastBoardInfo
-from src.cli.interactions.broadcast.BroadcastReset import BroadcastReset
-from src.cli.interactions.broadcast.BroadcastLock import BroadcastLock
-from src.cli.interactions.broadcast.BroadcastConfigurationInformation import BroadcastConfigurationInformation
-from src.cli.interactions.broadcast.BroadcastSwID import BroadcastSwID
-from src.cli.interactions.broadcast.BroadcastVersion import BroadcastVersion
-from src.cli.interactions.broadcast.BroadcastMemory import BroadcastMemory
-from src.cli.interactions.broadcast.BroadcastEnableVerboseEvents import BroadcastEnableVerboseEvents
-from src.cli.interactions.broadcast.BroadcastDisableVerboseEvents import BroadcastDisableVerboseEvents
-from src.cli.interactions.broadcast.BroadcastUpdateFirmware import BroadcastUpdateFirmware
-from src.cli.interactions.broadcast.BroadcastEnableApplicationEventsOnly import BroadcastEnableApplicationEventsOnly
-from src.cli.interactions.broadcast.BroadcastDisableApplicationEventsOnly import BroadcastDisableApplicationEventsOnly
-from src.cli.interactions.broadcast.BroadcastEraseConfiguration import BroadcastEraseConfiguration
-from src.cli.interactions.broadcast.BroadcastProcessorLoad import BroadcastProcessorLoad
-from src.cli.interactions.broadcast.BroadcastEngineThreadFailures import BroadcastEngineThreadFailures
-from src.cli.interactions.broadcast.BroadcastUptime import BroadcastUptime
+from api.cli.interactions.broadcast.BroadcastPing import BroadcastPing
+from api.cli.interactions.broadcast.BroadcastBoardInfo import BroadcastBoardInfo
+from api.cli.interactions.broadcast.BroadcastReset import BroadcastReset
+from api.cli.interactions.broadcast.BroadcastLock import BroadcastLock
+from api.cli.interactions.broadcast.BroadcastConfigurationInformation import BroadcastConfigurationInformation
+from api.cli.interactions.broadcast.BroadcastSwID import BroadcastSwID
+from api.cli.interactions.broadcast.BroadcastVersion import BroadcastVersion
+from api.cli.interactions.broadcast.BroadcastMemory import BroadcastMemory
+from api.cli.interactions.broadcast.BroadcastEnableVerboseEvents import BroadcastEnableVerboseEvents
+from api.cli.interactions.broadcast.BroadcastDisableVerboseEvents import BroadcastDisableVerboseEvents
+from api.cli.interactions.broadcast.BroadcastUpdateFirmware import BroadcastUpdateFirmware
+from api.cli.interactions.broadcast.BroadcastEnableApplicationEventsOnly import BroadcastEnableApplicationEventsOnly
+from api.cli.interactions.broadcast.BroadcastDisableApplicationEventsOnly import BroadcastDisableApplicationEventsOnly
+from api.cli.interactions.broadcast.BroadcastEraseConfiguration import BroadcastEraseConfiguration
+from api.cli.interactions.broadcast.BroadcastProcessorLoad import BroadcastProcessorLoad
+from api.cli.interactions.broadcast.BroadcastEngineThreadFailures import BroadcastEngineThreadFailures
+from api.cli.interactions.broadcast.BroadcastUptime import BroadcastUptime
 
 # automation interactions:
-from src.cli.interactions.automation.AutomationPing import AutomationPing
-from src.cli.interactions.automation.AutomationCreateLog import AutomationCreateLog
-from src.cli.interactions.automation.AutomationReadLog import AutomationReadLog
-from src.cli.interactions.automation.AutomationBoardInfo import AutomationBoardInfo
-from src.cli.interactions.automation.AutomationLock import AutomationLock
-from src.cli.interactions.automation.AutomationReset import AutomationReset
-from src.cli.interactions.automation.AutomationConfigurationInformation import AutomationConfigurationInformation
-from src.cli.interactions.automation.AutomationDump import AutomationDump
-from src.cli.interactions.automation.AutomationSwID import AutomationSwID
-from src.cli.interactions.automation.AutomationVersion import AutomationVersion
-from src.cli.interactions.automation.AutomationMemory import AutomationMemory
-from src.cli.interactions.automation.AutomationEnableVerboseEvents import AutomationEnableVerboseEvents
-from src.cli.interactions.automation.AutomationDisableVerboseEvents import AutomationDisableVerboseEvents
-from src.cli.interactions.automation.AutomationEraseConfiguration import AutomationEraseConfiguration
-from src.cli.interactions.automation.AutomationGetVariable import AutomationGetVariable
-from src.cli.interactions.automation.AutomationSetVariable import AutomationSetVariable
-from src.cli.interactions.automation.AutomationSendEvent import AutomationSendEvent
-from src.cli.interactions.automation.AutomationDegradationStatus import AutomationDegradationStatus
-from src.cli.interactions.automation.AutomationProcessorLoad import AutomationProcessorLoad
-from src.cli.interactions.automation.AutomationUpdate import AutomationUpdate
-from src.cli.interactions.automation.AutomationUptime import AutomationtUptime
-from src.cli.interactions.automation.AutomationEngineThreadFailures import AutomationEngineThreadFailures
+from api.cli.interactions.automation.AutomationPing import AutomationPing
+from api.cli.interactions.automation.AutomationCreateLog import AutomationCreateLog
+from api.cli.interactions.automation.AutomationReadLog import AutomationReadLog
+from api.cli.interactions.automation.AutomationBoardInfo import AutomationBoardInfo
+from api.cli.interactions.automation.AutomationLock import AutomationLock
+from api.cli.interactions.automation.AutomationReset import AutomationReset
+from api.cli.interactions.automation.AutomationConfigurationInformation import AutomationConfigurationInformation
+from api.cli.interactions.automation.AutomationDump import AutomationDump
+from api.cli.interactions.automation.AutomationSwID import AutomationSwID
+from api.cli.interactions.automation.AutomationVersion import AutomationVersion
+from api.cli.interactions.automation.AutomationMemory import AutomationMemory
+from api.cli.interactions.automation.AutomationEnableVerboseEvents import AutomationEnableVerboseEvents
+from api.cli.interactions.automation.AutomationDisableVerboseEvents import AutomationDisableVerboseEvents
+from api.cli.interactions.automation.AutomationEraseConfiguration import AutomationEraseConfiguration
+from api.cli.interactions.automation.AutomationGetVariable import AutomationGetVariable
+from api.cli.interactions.automation.AutomationSetVariable import AutomationSetVariable
+from api.cli.interactions.automation.AutomationSendEvent import AutomationSendEvent
+from api.cli.interactions.automation.AutomationDegradationStatus import AutomationDegradationStatus
+from api.cli.interactions.automation.AutomationProcessorLoad import AutomationProcessorLoad
+from api.cli.interactions.automation.AutomationUpdate import AutomationUpdate
+from api.cli.interactions.automation.AutomationUptime import AutomationtUptime
+from api.cli.interactions.automation.AutomationEngineThreadFailures import AutomationEngineThreadFailures
 
 # additional imports:
-from src.base.PlatformConfiguration import PlatformConfiguration
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error
+from api.base.PlatformConfiguration import PlatformConfiguration
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error
 
-from src.connect.Connector import Connector
+from api.connect.Connector import Connector
 
 
 class IP_AddressRange:

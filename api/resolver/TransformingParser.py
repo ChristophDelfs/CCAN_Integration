@@ -2,26 +2,26 @@ import lark
 import os
 from lark.visitors import Transformer, v_args
 import ast
-from src.resolver.ResolverError import ResolverError
+from api.resolver.ResolverError import ResolverError
 #import itertools
 
-from src.resolver.Definitions import ParsedParameterDescriptionList
-from src.resolver.Definitions import ParsedEventDescription,ParsedSensorDriverDescription,ParsedTransportAdapterDescriptionList
-from src.resolver.Definitions import ParsedUsagePin,ParsedOfferedConnectionUsage,ParsedConnectedPin,ParsedUsagePinEntry
-from src.resolver.Definitions import ParsedDeviceInstance,ParsedAppInstance, ParsedControllerInstance, ParsedGeneralAppDescription, ParsedMappingList
-from src.resolver.Definitions import ParsedAliasDefinition,ParsedDeviceDescription
-from src.resolver.Definitions import ParsedAutomation, ParsedSensorDriverDescriptionList,ParsedCommunicationDriverDescriptionList
-from src.resolver.Definitions import ParsedPinList,ParsedAdapterList, ParsedCommunicationList, ParsedDegradationCode , ParsedProtocol, ParsedAdditionalProtocolType
-from src.resolver.Definitions import ParsedProtocolAdapterDescriptionList, ParsedTransportAdapterDescription
-from src.resolver.Definitions import ParsedEvent , ParsedTransportAdapterUsage, ParsedOfferedTransportAdapterUsage 
-from src.resolver.Definitions import LocationInfo,ParsedOfferedTransportAdapterList, ParsedExportList
-from src.resolver.Definitions import ParsedVariableInstance,ParsedTemplateVariableInstance, ParsedVariableInExpression
-from src.resolver.Definitions import ParsedEquivalent, ParsedHADeviceInstance, ParsedVariableName, ParsedConstraints
+from api.resolver.Definitions import ParsedParameterDescriptionList
+from api.resolver.Definitions import ParsedEventDescription,ParsedSensorDriverDescription,ParsedTransportAdapterDescriptionList
+from api.resolver.Definitions import ParsedUsagePin,ParsedOfferedConnectionUsage,ParsedConnectedPin,ParsedUsagePinEntry
+from api.resolver.Definitions import ParsedDeviceInstance,ParsedAppInstance, ParsedControllerInstance, ParsedGeneralAppDescription, ParsedMappingList
+from api.resolver.Definitions import ParsedAliasDefinition,ParsedDeviceDescription
+from api.resolver.Definitions import ParsedAutomation, ParsedSensorDriverDescriptionList,ParsedCommunicationDriverDescriptionList
+from api.resolver.Definitions import ParsedPinList,ParsedAdapterList, ParsedCommunicationList, ParsedDegradationCode , ParsedProtocol, ParsedAdditionalProtocolType
+from api.resolver.Definitions import ParsedProtocolAdapterDescriptionList, ParsedTransportAdapterDescription
+from api.resolver.Definitions import ParsedEvent , ParsedTransportAdapterUsage, ParsedOfferedTransportAdapterUsage 
+from api.resolver.Definitions import LocationInfo,ParsedOfferedTransportAdapterList, ParsedExportList
+from api.resolver.Definitions import ParsedVariableInstance,ParsedTemplateVariableInstance, ParsedVariableInExpression
+from api.resolver.Definitions import ParsedEquivalent, ParsedHADeviceInstance, ParsedVariableName, ParsedConstraints
                  
 
 
-from src.resolver.ResolverElements import EventVariable, SerializedFunctionExpression, FunctionExpression, Function
-from src.resolver.Definitions import OperatorTypeKey,Operator, ParsedSymbol, ElementTypeKey, OperandTypeKey
+from api.resolver.ResolverElements import EventVariable, SerializedFunctionExpression, FunctionExpression, Function
+from api.resolver.Definitions import OperatorTypeKey,Operator, ParsedSymbol, ElementTypeKey, OperandTypeKey
 
 # https://lark-parser.readthedocs.io/en/latest/classes/
 # https://github.com/lark-parser/lark/blob/master/lark/grammars/common.lark

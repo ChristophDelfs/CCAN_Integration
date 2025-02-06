@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from src.base.PlatformConfiguration import PlatformConfiguration
+from api.base.PlatformConfiguration import PlatformConfiguration
 
 
 def locateFile(my_filename, my_path_list, recursive_search=False):

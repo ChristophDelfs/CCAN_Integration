@@ -2,13 +2,13 @@ import os
 import time
 import math
 
-from src.base.LocateFile import locateFile
-from src.cli.download.DownloadInfo import DownloadInfo
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-from src.base.Report import Report, ReportLevel
-from src.base.TimeDelta import TimeDelta
-from src.cli.interactions.controller.Reset import Reset
-from src.base.PlatformConfiguration import PlatformConfiguration
+from api.base.LocateFile import locateFile
+from api.cli.download.DownloadInfo import DownloadInfo
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.Report import Report, ReportLevel
+from api.base.TimeDelta import TimeDelta
+from api.cli.interactions.controller.Reset import Reset
+from api.base.PlatformConfiguration import PlatformConfiguration
 import signal
 
 class DownloadRobot():

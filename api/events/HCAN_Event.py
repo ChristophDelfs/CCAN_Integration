@@ -1,12 +1,12 @@
 import time
 
-from src.PyCCAN_ConvertBinary import SequenceExtractor
-from src.PyCCAN_ConvertBinary import SequenceCreator
-from src.events.RawEvent import RawEvent
+from api.PyCCAN_ConvertBinary import SequenceExtractor
+from api.PyCCAN_ConvertBinary import SequenceCreator
+from api.events.RawEvent import RawEvent
 
-from src.events.Parameters import Parameters
-from src.base.CCAN_Error import CCAN_Error
-from src.base.CCAN_Error import CCAN_ErrorCode
+from api.events.Parameters import Parameters
+from api.base.CCAN_Error import CCAN_Error
+from api.base.CCAN_Error import CCAN_ErrorCode
 
 
 class HCAN_Event(RawEvent):

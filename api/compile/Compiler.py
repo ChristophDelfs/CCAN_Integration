@@ -1,25 +1,25 @@
 import os
 from lark import exceptions
 
-from src.ConfigurationValidator import ConfigurationValidator
+from api.ConfigurationValidator import ConfigurationValidator
 
-from src.resolver.TransformingParser import TransformingParser 
-from src.resolver.ParameterStore import ParameterStore
-from src.resolver.ResolverError import ResolverError   
-from src.resolver.Resolver import Resolver
-from src.resolver.Definitions import BinaryConfig
-from src.resolver.Definitions import LocationInfo
+from api.resolver.TransformingParser import TransformingParser 
+from api.resolver.ParameterStore import ParameterStore
+from api.resolver.ResolverError import ResolverError   
+from api.resolver.Resolver import Resolver
+from api.resolver.Definitions import BinaryConfig
+from api.resolver.Definitions import LocationInfo
 
-from src.ConfigurationManager import ConfigurationManager
-from src.base.PlatformConfiguration import PlatformConfiguration
+from api.ConfigurationManager import ConfigurationManager
+from api.base.PlatformConfiguration import PlatformConfiguration
 
-from   src.compile.ControllerStore import ControllerStore
-import src.compile.CompilerHelper as CompilerHelper
+from   api.compile.ControllerStore import ControllerStore
+import api.compile.CompilerHelper as CompilerHelper
 
-from src.connect.FTP_Services import FTPFileServices
+from api.connect.FTP_Services import FTPFileServices
 
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.PyCCAN_Warnings import CCAN_Warnings
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.PyCCAN_Warnings import CCAN_Warnings
 
 class Compiler:
 #    _store = Store()

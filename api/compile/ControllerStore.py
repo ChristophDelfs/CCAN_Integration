@@ -1,8 +1,8 @@
 from ..resolver.ParameterStore import ParameterStore# ,OperandTypeKey,ElementTypeKey
-from src.resolver.ResolverElements import ProtocolType, MappingType, ResolvedParameter, ParameterFormat, MapperType
+from api.resolver.ResolverElements import ProtocolType, MappingType, ResolvedParameter, ParameterFormat, MapperType
 
 from ..PyCCAN_Writables import WriteableDevice, WriteableVariable, WriteableMapperDevice,WriteableMappingType, WriteableRule, WriteableConfig
-from src.resolver.ResolverElements import ResolvedEventInstance
+from api.resolver.ResolverElements import ResolvedEventInstance
 
 
 class ControllerMappingStore():

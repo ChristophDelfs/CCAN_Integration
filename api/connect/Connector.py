@@ -5,15 +5,15 @@ import threading
 from pathlib import Path
 
 from .UDP_Client import UDP_Client
-from src.base.LocateFile import locateFile
-from src.events.EventResolver import EventResolver
-from src.resolver.ResolverError import ResolverError
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.base.PlatformDefaults import PlatformDefaults
-from src.base.PlatformConfiguration import PlatformConfiguration
-from src.base.Report import Report, ReportLevel
-from src.events.ApplicationEvent import ApplicationEvent
+from api.base.LocateFile import locateFile
+from api.events.EventResolver import EventResolver
+from api.resolver.ResolverError import ResolverError
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformConfiguration import PlatformConfiguration
+from api.base.Report import Report, ReportLevel
+from api.events.ApplicationEvent import ApplicationEvent
 from .FTP_Services import FTPFileServices
 import socket
 
@@ -34,6 +34,7 @@ class Connector:
         self._server_port = my_server_port
         self._server_address = (my_server_ip_address, self._server_port)
         self._instance_dictionary = None
+        self._description_dictionary = None
 
         self._udp_client: UDP_Client = None
         self._init = False
@@ -408,9 +409,12 @@ class Connector:
         self._read_from_file(local_filename)
 
     def _read_from_file(self, my_filename):
-        with open(my_filename, "rb") as f:
-            self._description_dictionary = pickle.load(f)
-            self._instance_dictionary = pickle.load(f)
+        try:
+            with open(my_filename, "rb") as f:
+                self._description_dictionary = pickle.load(f)
+                self._instance_dictionary = pickle.load(f)
+        except Exception as ex:
+            pass
 
         self._event_resolver.set_automation(
             self._description_dictionary, self._instance_dictionary

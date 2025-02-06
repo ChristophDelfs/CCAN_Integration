@@ -1,13 +1,13 @@
-from src.base.CCAN_Defaults import CCAN_Defaults
-from src.PyCCAN_Writer import Writer
-from src.PyCCAN_ConvertBinary import SequenceCreator
+from api.base.CCAN_Defaults import CCAN_Defaults
+from api.PyCCAN_Writer import Writer
+from api.PyCCAN_ConvertBinary import SequenceCreator
 from intelhex import IntelHex
-from src.base.CCAN_Defaults import CCAN_Defaults
+from api.base.CCAN_Defaults import CCAN_Defaults
 
 import os
 import binascii
 from pathlib import Path
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class DownloadImage():
     def __init__(self, my_filename):

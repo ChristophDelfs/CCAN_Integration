@@ -1,6 +1,6 @@
-from src.cli.interactions.automation.SimpleAutomationInteraction import SimpleAutomationInteraction
-from src.base.Report import Report, ReportLevel
-from src.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
+from api.cli.interactions.automation.SimpleAutomationInteraction import SimpleAutomationInteraction
+from api.base.Report import Report, ReportLevel
+from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
 class AutomationEraseConfiguration(SimpleAutomationInteraction):
     def __init__(self, my_connector, my_waiting_time, my_retries, my_automation_file):                           

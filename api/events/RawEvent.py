@@ -3,8 +3,8 @@ import datetime
 import struct
 import copy
 
-from src.PyCCAN_ConvertBinary import SequenceExtractor
-from src.resolver.Definitions import Colors, NoColors
+from api.PyCCAN_ConvertBinary import SequenceExtractor
+from api.resolver.Definitions import Colors, NoColors
 
 
 class AddressingType:

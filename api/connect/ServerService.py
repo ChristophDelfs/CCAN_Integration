@@ -1,7 +1,7 @@
-from src.events.EventResolver import EventResolver
-from src.events.ApplicationEvent import ApplicationEvent
+from api.events.EventResolver import EventResolver
+from api.events.ApplicationEvent import ApplicationEvent
 from binascii import crc32
-from src.base.PlatformDefaults import PlatformDefaults
+from api.base.PlatformDefaults import PlatformDefaults
 
 
 class ServerService:
