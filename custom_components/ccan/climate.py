@@ -34,9 +34,8 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.components.sensor import SensorDeviceClass
-# from .api import Device, DeviceType
 
-from .const import CONST_CMD_FAN_MAP, CONST_CMD_STATE_MAP, DOMAIN
+from .const import DOMAIN
 
 from .coordinator import CCAN_Coordinator
 from homeassistant.config_entries import ConfigEntry
