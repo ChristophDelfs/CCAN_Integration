@@ -13,7 +13,7 @@ import voluptuous as vol
 
 # Import the device class from the component that you want to support
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.light import ATTR_BRIGHTNESS, PLATFORM_SCHEMA, LightEntity
+from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, ColorMode
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -129,6 +129,14 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
     @property
     def initialized(self):
         return self._state is not None
+
+    @property
+    def color_mode(self):
+        return ColorMode.UNKNOWN
+
+    @property
+    def supported_color_modes(self):
+        return [ColorMode.ONOFF]
 
     @property
     def device_class(self) -> str:

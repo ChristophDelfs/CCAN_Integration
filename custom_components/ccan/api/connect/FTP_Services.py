@@ -10,6 +10,7 @@ from api.base.CCAN_Error import CCAN_ErrorCode
 
 _LOGGER = logging.getLogger(__name__)
 
+
 class FTPFileServices:
     def __init__(self, my_platform_configuration_settings):
         self._production_settings = my_platform_configuration_settings
@@ -64,11 +65,11 @@ class FTPFileServices:
         session.quit()
         self.valid = True
 
-    def push_to_ftp_server(self, my_pkl_file_name: str):      
+    def push_to_ftp_server(self, my_pkl_file_name: str):
         if not self.valid:
             return
-        
-        fp = open(my_pkl_file_name, 'rb')
+
+        fp = open(my_pkl_file_name, "rb")
         my_ftp_pkl_file_name = os.path.basename(my_pkl_file_name)
 
         session = ftplib.FTP(self._ip_address)
@@ -82,24 +83,24 @@ class FTPFileServices:
         session.storbinary("STOR " + my_ftp_pkl_file_name, fp)
         session.quit()
 
-        
-    def pull_from_ftp_server(self, my_pkl_file_name):      
+    def pull_from_ftp_server(self, my_pkl_file_name):
         if not self.valid:
-            return      
+            return
         session = ftplib.FTP(self._ip_address)
         session.login(self._login, self._password)
         try:
-            session.cwd("ccan_files")       
+            session.cwd("ccan_files")
         except ftplib.error_perm:
-           raise FileNotFoundError
+            raise FileNotFoundError
 
-        self._temp_file = open(self._automation_filename,"wb")
+        self._temp_file = open(self._automation_filename, "wb")
         try:
             session.retrbinary(f"RETR {my_pkl_file_name}.pkl", self.__callback)
+            _LOGGER.info(f"Automation file {my_pkl_file_name} read from ftp server.")
         except ftplib.error_perm:
             raise FileNotFoundError
         session.quit()
-        self._temp_file.close()       
+        self._temp_file.close()
         return self._automation_filename
 
     def __callback(self, my_data):
