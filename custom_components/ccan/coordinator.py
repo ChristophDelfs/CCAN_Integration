@@ -72,6 +72,7 @@ class CCAN_Coordinator(DataUpdateCoordinator):
         self.initialize_count: int = (
             0  # all created HA device have registered their events in coordinator
         )
+
         self.initialized: bool = False
         self.connector: Connector = None
         self._automation_base: AutomationBase = None
@@ -211,23 +212,10 @@ class CCAN_Coordinator(DataUpdateCoordinator):
     def get_controller_name(self):
         return self.host.replace(".", "_")
 
-    # def get_device_by_id(
-    #    self, device_type: ResolvedDeviceInstance, device_id: int
-    # ) -> Device | None:
-    #    """Return device by device id."""
-    #    # Called by the binary sensors and sensors to get their updated data from self.data
-    #    try:
-    #        return [
-    #            device
-    #            for device in self.data.devices
-    #            if device.device_type == device_type and device.device_id == device_id
-    #        ][0]
-    #    except IndexError:
-    #        return None
     def add_listening_event(self, my_new_event: str, my_method):
         try:
             existing_methods = self._collected_listening_event_map[my_new_event]
-            existing_methods.apppend(my_method)
+            existing_methods.append(my_method)
         except KeyError:
             self._collected_listening_event_map[my_new_event] = [my_method]
 

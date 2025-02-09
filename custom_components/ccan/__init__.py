@@ -21,8 +21,10 @@ _LOGGER = logging.getLogger(__name__)
 PLATFORMS: list[Platform] = [
     # Platform.BINARY_SENSOR,
     Platform.LIGHT,
-    # Platform.SENSOR,
+    Platform.SENSOR,
     Platform.CLIMATE,
+    # Platform.COVER,
+    # Platform.BINARY_SENSOR
 ]
 
 
@@ -71,7 +73,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     )
 
     # Setup platforms (based on the list of entity types in PLATFORMS defined above)
-    # This calls the async_setup method in each of your entity type files.   
+    # This calls the async_setup method in each of your entity type files.
     await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
 
     # Return true to denote a successful setup.
