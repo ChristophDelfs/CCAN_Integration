@@ -1,12 +1,14 @@
 import os
 import ftplib
 import socket
+import logging
 from pathlib import Path
 
 from api.base.CCAN_Error import CCAN_Error
 from api.base.CCAN_Error import CCAN_ErrorCode
 # https://www.digitalocean.com/community/tutorials/how-to-set-up-vsftpd-for-a-user-s-directory-on-ubuntu-16-04
 
+_LOGGER = logging.getLogger(__name__)
 
 class FTPFileServices:
     def __init__(self, my_platform_configuration_settings):
@@ -62,19 +64,21 @@ class FTPFileServices:
         session.quit()
         self.valid = True
 
-    def push_to_ftp_server(self, my_pkl_file_name: str, my_pkl_file):
+    def push_to_ftp_server(self, my_pkl_file_name: str):
         if not self.valid:
             return
-        fp = open(my_pkl_file + ".pkl", "rb")
-
+        
+        my_ftp_pkl_file_name = os.path.basename(my_pkl_file_name)
+        fp = open(my_pkl_file_name, 'rb')
         session = ftplib.FTP(self._ip_address)
         session.login(self._login, self._password)
         session.cwd("files")
-        session.storbinary("STOR " + my_pkl_file_name + ".pkl", fp)
+        session.storbinary("STOR " + my_ftp_pkl_file_name + ".pkl", fp)
         session.quit()
 
+
     def pull_from_ftp_server(self, my_pkl_file_name):
-        print("FTP: pull from server", self.valid)
+        _LOGGER.warning("FTP: pull from server", self.valid)
         if not self.valid:
             return
         session = ftplib.FTP(self._ip_address)
@@ -84,7 +88,7 @@ class FTPFileServices:
         try:
             session.retrbinary(f"RETR {my_pkl_file_name}.pkl", self.__callback)
         except ftplib.error_perm:
-            print(f"FTP file {my_pkl_file_name}.pkl not found")
+            _LOGGER.error("FTP file %spkl not found",my_pkl_file_name)
             raise FileNotFoundError
         session.quit()
         self._temp_file.close()
