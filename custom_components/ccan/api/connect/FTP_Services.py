@@ -64,37 +64,42 @@ class FTPFileServices:
         session.quit()
         self.valid = True
 
-    def push_to_ftp_server(self, my_pkl_file_name: str):
+    def push_to_ftp_server(self, my_pkl_file_name: str):      
         if not self.valid:
             return
-
-        with open(my_pkl_file_name, mode='rb') as file: # b is important -> binary
-            pkl_content = file.read()
-
+        
+        fp = open(my_pkl_file_name, 'rb')
         my_ftp_pkl_file_name = os.path.basename(my_pkl_file_name)
-       
+
         session = ftplib.FTP(self._ip_address)
         session.login(self._login, self._password)
-        session.cwd("files")
-        session.storbinary("STOR " + my_ftp_pkl_file_name + ".pkl", pkl_content)
+        try:
+            session.cwd("ccan_files")
+        except ftplib.error_perm:
+            session.mkd("ccan_files")
+            session.cwd("ccan_files")
+
+        session.storbinary("STOR " + my_ftp_pkl_file_name, fp)
         session.quit()
 
-
-    def pull_from_ftp_server(self, my_pkl_file_name):
-        _LOGGER.warning("FTP: pull from server", self.valid)
+        
+    def pull_from_ftp_server(self, my_pkl_file_name):      
         if not self.valid:
-            return
+            return      
         session = ftplib.FTP(self._ip_address)
         session.login(self._login, self._password)
-        session.cwd("files")
-        self._temp_file = open(self._automation_filename, "wb")
+        try:
+            session.cwd("ccan_files")       
+        except ftplib.error_perm:
+           raise FileNotFoundError
+
+        self._temp_file = open(self._automation_filename,"wb")
         try:
             session.retrbinary(f"RETR {my_pkl_file_name}.pkl", self.__callback)
         except ftplib.error_perm:
-            _LOGGER.error("FTP file %spkl not found",my_pkl_file_name)
             raise FileNotFoundError
         session.quit()
-        self._temp_file.close()
+        self._temp_file.close()       
         return self._automation_filename
 
     def __callback(self, my_data):
