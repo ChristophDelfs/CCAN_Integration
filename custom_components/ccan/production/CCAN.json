@@ -29,9 +29,9 @@
 
   "FTP_SERVER" :
   {
-    "IP_ADDRESS" : "192.168.2.49",
-    "LOGIN"   :  "ccan",
-    "PASSWORD": "ccan",
+    "IP_ADDRESS" : "192.168.2.153",
+    "LOGIN"   :  "hassio",
+    "PASSWORD": "Sprutel98_98",
     "TEMPORARY_AUTOMATION_FILE" : "tmp/automation.pkl"
   },
 
