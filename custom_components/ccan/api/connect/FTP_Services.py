@@ -67,13 +67,16 @@ class FTPFileServices:
     def push_to_ftp_server(self, my_pkl_file_name: str):
         if not self.valid:
             return
-        
+
+        with open(my_pkl_file_name, mode='rb') as file: # b is important -> binary
+            pkl_content = file.read()
+
         my_ftp_pkl_file_name = os.path.basename(my_pkl_file_name)
-        fp = open(my_pkl_file_name, 'rb')
+       
         session = ftplib.FTP(self._ip_address)
         session.login(self._login, self._password)
         session.cwd("files")
-        session.storbinary("STOR " + my_ftp_pkl_file_name + ".pkl", fp)
+        session.storbinary("STOR " + my_ftp_pkl_file_name + ".pkl", pkl_content)
         session.quit()
 
 
