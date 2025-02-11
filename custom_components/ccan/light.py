@@ -203,17 +203,11 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
 
     def turn_on(self) -> None:
         """Instruct the light to turn on. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
-
-        events = self.ha_library.get_symbolic_event(self.device, "TURN_ON")
-        for event in events:
-            self.coordinator.connector.send_event(event)
+        self.ha_library.send(self.device, "TURN_ON")          
 
     def turn_off(self) -> None:
         """Instruct the light to turn off. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
-
-        events = self.ha_library.get_symbolic_event(self.device, "TURN_OFF")
-        for event in events:
-            self.coordinator.connector.send_event(event)
+        self.ha_library.send(self.device, "TURN_OFF")     
 
     def external_update_on(self, *args) -> None:
         self.update(True)

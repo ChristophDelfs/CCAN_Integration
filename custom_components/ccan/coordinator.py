@@ -177,7 +177,7 @@ class CCAN_Coordinator(DataUpdateCoordinator):
             return False
 
         # simplify access to devices:
-        self.ha_library = HA_Library(self.connector.get_instance_dictionary())
+        self.ha_library = HA_Library(self.connector)
 
         self.ready = True
         return True
@@ -212,6 +212,10 @@ class CCAN_Coordinator(DataUpdateCoordinator):
     def get_controller_name(self):
         return self.host.replace(".", "_")
 
+    def add_listening_events(self, my_new_events: list[str], my_method):
+        for event in my_new_events:
+            self.add_listening_event(event, my_method)
+
     def add_listening_event(self, my_new_event: str, my_method):
         try:
             existing_methods = self._collected_listening_event_map[my_new_event]
@@ -233,11 +237,7 @@ class CCAN_Coordinator(DataUpdateCoordinator):
             if self._stop_event.is_set():
                 return
             for variable, method in entity.get_variables():
-                method(
-                    self.ha_library.get_variable_value(
-                        self.connector, entity.device, variable, 0.2
-                    )
-                )
+                method(self.ha_library.get_variable_value(entity.device, variable, 0.2))
 
         self.initialized = True
 

@@ -295,20 +295,6 @@ class CCAN_Climate(ClimateEntity):
         """Return target temperature."""
         return self._target_temperature
 
-    async def async_set_temperature(self, **kwargs: Any) -> None:
-        """Set the target temperature."""
-        if (temperature := kwargs.get(ATTR_TEMPERATURE)) is not None:
-            #    await self.coordinator.async_set_temperature(self._ac_index, temperature)
-            self._target_temperature = temperature
-            await asyncio.to_thread(
-                self.coordinator.connector.send_event(
-                    self.ha_library.get_symbolic_event(
-                        self.device, "TARGET_TEMPERATURE", temperature
-                    )
-                )
-            )
-            self.schedule_update_ha_state()
-
     @property
     def hvac_mode(self) -> HVACMode | None:
         """Return hvac mode."""
@@ -335,19 +321,11 @@ class CCAN_Climate(ClimateEntity):
     async def async_set_temperature(self, **kwargs: Any) -> None:
         """Set the target temperature."""
         if (temperature := kwargs.get(ATTR_TEMPERATURE)) is not None:
-            commands = self.ha_library.get_symbolic_event(
-                self.device, "SET_TARGET_TEMPERATURE", temperature
-            )
             self.coordinator.connector.set_destination_address(
                 PlatformDefaults.BROADCAST_CCAN_ADDRESS
             )
-            for command in commands:
-                await asyncio.to_thread(self.coordinator.connector.send_event, command)
-
-            # self._target_temperature = temperature
-            # await super().async_set_temperature(**kwargs)
-            # self.schedule_update_ha_state()
-
+            await asyncio.to_thread(self.ha_library.send, self.device, "SET_TARGET_TEMPERATURE", temperature)
+       
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Set the hvac mode."""
         # self._hvac_mode = hvac_mode
@@ -358,16 +336,12 @@ class CCAN_Climate(ClimateEntity):
 
     async def async_turn_off(self) -> None:
         """Turn off."""
-        commands = self.ha_library.get_symbolic_event(self.device, "TURN_OFF")
-        for command in commands:
-            await asyncio.to_thread(self.coordinator.connector.send_event, command)
+        await asyncio.to_thread(self.ha_library.send, self.device, "TURN_OFF")      
 
     async def async_turn_on(self) -> None:
         """Turn on."""
-        commands = self.ha_library.get_symbolic_event(self.device, "TURN_ON")
-        for command in commands:
-            await asyncio.to_thread(self.coordinator.connector.send_event, command)
-
+        await asyncio.to_thread(self.ha_library.send, self.device, "TURN_ON")      
+        
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return the optional state attributes."""
