@@ -70,7 +70,8 @@ class CCAN_Cover(CoverEntity):
         self, coordinator: CCAN_Coordinator, device: ResolvedHomeAssistantDeviceInstance
     ) -> None:
         """Create a CCAN cover device."""
-       
+
+        self._attr_assumed_state = True
         self._cover_state = CoverState.UNKNOWN
         self._position = None
         self.coordinator = coordinator
