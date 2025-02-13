@@ -162,7 +162,6 @@ class Connector:
                 self._init = True
             except FileNotFoundError as err:
                 if self._ftp_services is not None:
-                    try:
                         self._read_from_ftp_server(self._filename)
                         self.is_automation_read_from_ftp_server = True
                         self._init = True
@@ -170,8 +169,6 @@ class Connector:
                             ReportLevel.WARN,
                             f"loaded automation {self._filename} from ftp server\n",
                         )
-                    except Exception as err:
-                        pass
 
             if not self._init:
                 raise CCAN_Error(
@@ -192,8 +189,7 @@ class Connector:
     def get_automation_source_file(self):
         return self._filename + ".ccan"
 
-    def get_automation_file(self):
-        print(self._filename)
+    def get_automation_file(self):    
         return self._filename + ".pkl"
 
     def resolve_event_list(self, my_symbolic_event_list):

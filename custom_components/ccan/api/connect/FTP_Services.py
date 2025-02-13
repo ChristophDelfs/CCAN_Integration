@@ -89,15 +89,16 @@ class FTPFileServices:
         session = ftplib.FTP(self._ip_address)
         session.login(self._login, self._password)
         try:
-            session.cwd("ccan_files")
+            session.cwd("ccan_files")            
         except ftplib.error_perm:
-            raise FileNotFoundError
+           raise CCAN_Error(CCAN_ErrorCode.CONFIGURATION_NOT_AVAILABLE,"Could not find defined directory ccan_files on ftp server!")
 
         self._temp_file = open(self._automation_filename, "wb")
         try:
             session.retrbinary(f"RETR {my_pkl_file_name}.pkl", self.__callback)
-            _LOGGER.info(f"Automation file {my_pkl_file_name} read from ftp server.")
+            Report.print(f"Automation file {my_pkl_file_name} read from ftp server.")
         except ftplib.error_perm:
+            raise CCAN_Error(CCAN_ErrorCode.CONFIGURATION_NOT_AVAILABLE,f"Could not find automation file {my_pkl_file_name} on ftp server!")
             raise FileNotFoundError
         session.quit()
         self._temp_file.close()

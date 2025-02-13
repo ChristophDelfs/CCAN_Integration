@@ -63,15 +63,14 @@ class CCAN_Cover(CoverEntity):
 
     _attr_device_class = CoverDeviceClass.SHUTTER
     _attr_supported_features: CoverEntityFeature = (
-        CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP
+        CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP | CoverEntityFeature.SET_POSITION
     )
 
     def __init__(
         self, coordinator: CCAN_Coordinator, device: ResolvedHomeAssistantDeviceInstance
     ) -> None:
         """Create a CCAN cover device."""
-
-        self._attr_supported_features |= CoverEntityFeature.SET_POSITION
+       
         self._cover_state = CoverState.UNKNOWN
         self._position = None
         self.coordinator = coordinator
@@ -158,22 +157,22 @@ class CCAN_Cover(CoverEntity):
     def current_cover_position(self) -> int:
         """Position of the cover."""
         if self._position is not None:
-            return int(self._position)
+            return self._position
         return None
 
     def set_initial_cover_position(self, value):
         if 0 < value < 100:
             self._position = value
-        if value == 0:
+        if value == 100:
             self._cover_state = CoverState.OPEN
-        elif value == 100:
+        elif value == 0:
             self._cover_state = CoverState.CLOSED
         else:
             self._cover_state = CoverState.STOPPED
         self.schedule_update_ha_state()
 
     def set_cover_position(self, value):
-        self._position = value
+        self._position = 100 - int(value)
 
     @property
     def is_closing(self) -> bool:
@@ -242,7 +241,7 @@ class CCAN_Cover(CoverEntity):
         """Move the cover to a specific position."""
         if (position := kwargs.get(ATTR_POSITION)) is not None:
             await asyncio.to_thread(
-                self.ha_library.send, self.device, "SET_POSITION", position
+                self.ha_library.send, self.device, "SET_POSITION", 100-position
             )
         self.async_write_ha_state()
 
