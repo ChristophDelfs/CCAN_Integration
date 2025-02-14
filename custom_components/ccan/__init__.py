@@ -23,8 +23,7 @@ PLATFORMS: list[Platform] = [
     Platform.LIGHT,
     Platform.SENSOR,
     Platform.CLIMATE,
-    Platform.COVER,
-    # Platform.BINARY_SENSOR
+    Platform.COVER,  
 ]
 
 
@@ -37,9 +36,7 @@ class RuntimeData:
 
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
-    """Set up Example Integration from a config entry."""
-
-    _LOGGER.info("bin in async_setup_entry")
+    """Set up CCAN Integration."""
 
     hass.data.setdefault(DOMAIN, {})
 

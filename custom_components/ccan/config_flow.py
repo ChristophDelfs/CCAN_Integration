@@ -55,11 +55,11 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     if not success:
         raise InvalidAuth
 
-    return {"title": f"Example Integration - {data[CONF_HOST]}"}
+    return {"title": f"CCAN Integration - {data[CONF_HOST]}"}
 
 
-class ExampleConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Example Integration."""
+class CCANConfigFlow(ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for CCAN Integration."""
 
     VERSION = 1
     _input_data: dict[str, Any]
@@ -67,10 +67,8 @@ class ExampleConfigFlow(ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        """Get the options flow for this handler."""
-        # Remove this method and the ExampleOptionsFlowHandler class
-        # if you do not want any options for your integration.
-        return ExampleOptionsFlowHandler(config_entry)
+        """Get the options flow for this handler."""       
+        return CCAN_OptionsFlowHandler(config_entry)
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -146,9 +144,7 @@ class ExampleConfigFlow(ConfigFlow, domain=DOMAIN):
             ),
             errors=errors,
         )
-
-
-class ExampleOptionsFlowHandler(OptionsFlow):
+class CCAN_OptionsFlowHandler(OptionsFlow):
     """Handles the options flow."""
 
     def __init__(self, config_entry: ConfigEntry) -> None:

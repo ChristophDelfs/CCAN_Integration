@@ -51,11 +51,6 @@ _LOGGER = logging.getLogger(__name__)
 class CCAN_Coordinator(DataUpdateCoordinator):
     """Coordinator for CCAN integration"""
 
-    # data: ExampleAPIData
-    # api: API = None
-    # entities: set = {}
-    # values: set[float | bool] = {}
-
     def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry) -> None:
         """Initialize coordinator."""
 
