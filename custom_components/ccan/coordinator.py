@@ -104,7 +104,10 @@ class CCAN_Coordinator(DataUpdateCoordinator):
 
     @staticmethod
     async def validate_connection(host: str, port: int):
-        connector = await asyncio.to_thread(Connector, host, port)
+        try:
+            connector = await asyncio.to_thread(Connector, host, port)
+        except CCAN_Error:
+            return False
         # await asyncio.to_thread(connector.setup)
         await asyncio.to_thread(connector.connect)
         return connector.is_connected()
@@ -294,5 +297,4 @@ class CCAN_Coordinator(DataUpdateCoordinator):
 
             except CCAN_Error as ex:
                 if ex.get_code() != CCAN_ErrorCode.TIME_OUT:
-                    _LOGGER.error("CCAN Thread with unexpected error: %s", str(ex))
-                    return  ##
+                    _LOGGER.error("CCAN Thread with unexpected error: %s", str(ex))                   
