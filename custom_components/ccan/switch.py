@@ -13,7 +13,7 @@ import voluptuous as vol
 
 # Import the device class from the component that you want to support
 import homeassistant.helpers.config_validation as cv
-from homeassistant.components.light import PLATFORM_SCHEMA, LightEntity, ColorMode
+from homeassistant.components.switch import PLATFORM_SCHEMA, SwitchEntity
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -79,27 +79,27 @@ async def async_setup_entry(
     """Set up the Lights."""
     coordinator: CCAN_Coordinator = hass.data[DOMAIN][config_entry.entry_id].coordinator
 
-    lights: list[CCAN_Light] = [
-        CCAN_Light(coordinator, device)
-        for device in coordinator.ha_library.get_devices("HA_LIGHT")
+    switches: list[CCAN_Switch] = [
+        CCAN_Switch(coordinator, device)
+        for device in coordinator.ha_library.get_devices("HA_SWITCH")
     ]
 
-    if len(lights) > 0:
+    if len(switches) > 0:
         coordinator.initialize_count += 1
 
     # Add Lights to HA:
-    async_add_entities(lights)
-    _LOGGER.info("Added %d lights", len(lights))
+    async_add_entities(switches)
+    _LOGGER.info("Added %d switches", len(switches))
 
 
-class CCAN_Light(CoordinatorEntity, LightEntity):
-    """Representation of a CCAN Light."""
+class CCAN_Switch(CoordinatorEntity, SwitchEntity):
+    """Representation of a CCAN switch."""
 
     def __init__(
         self, coordinator: CCAN_Coordinator, device: ResolvedHomeAssistantDeviceInstance
     ):
         super().__init__(coordinator)
-        """Initialize an AwesomeLight."""
+        """Initialize a CCAN switch."""
         # self._light = light
 
         self.coordinator = coordinator
@@ -128,15 +128,7 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
 
     @property
     def initialized(self):
-        return self._state is not None
-
-    @property
-    def color_mode(self):
-        return ColorMode.UNKNOWN
-
-    @property
-    def supported_color_modes(self):
-        return [ColorMode.ONOFF]
+        return self._state is not None  
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -145,7 +137,7 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
         return DeviceInfo(
             name=self._name,
             manufacturer="",
-            model="Lampe",
+            model="Gerät",
             sw_version="1.0",
             identifiers={
                 (
@@ -158,23 +150,11 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
             ),
         )
 
-    # @property
-    # def should_polling(self):
-    #    return False
 
     @property
     def name(self) -> str:
         """Return the display name of this light."""
         return self._name
-
-    # @property
-    # def brightness(self):
-    #    """Return the brightness of the light.
-    #
-    #    This method is optional. Removing it indicates to Home Assistant
-    #    that brightness is not supported for this light.
-    #    """
-    #    return self._brightness
 
     @property
     def unique_id(self) -> str:
@@ -184,31 +164,29 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
         return f"{DOMAIN}-{self.device.get_name()}"
 
     def get_variables(self):
-        return [("STATUS", self.update_state)]
+        return [("STATUS", self.update)]
 
     @property
     def is_on(self) -> bool | None:
-        """Return true if light is on."""
+        """Return true if device is on."""
 
         return self._state if self._state is not None else False
 
     def turn_on(self) -> None:
-        """Instruct the light to turn on. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
-        self.ha_library.send(self.device, "TURN_ON")
+        """Instruct the device to turn on. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
+        self.ha_library.send(self.device, "TURN_ON")          
 
     def turn_off(self) -> None:
-        """Instruct the light to turn off. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
-        self.ha_library.send(self.device, "TURN_OFF")
+        """Instruct the device to turn off. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
+        self.ha_library.send(self.device, "TURN_OFF")     
 
     def external_update_on(self, *args) -> None:
-        self.update_state(True)
+        self.update(True)
 
     def external_update_off(self, *args) -> None:
-        self.update_state(False)
+        self.update(False)
 
-    def update_state(self, new_value) -> None:
+    def update(self, new_value) -> None:
         self._state = new_value
         # self._state = False if self._state else True
         self.schedule_update_ha_state()
-
-    # https://developers.home-assistant.io/docs/core/entity

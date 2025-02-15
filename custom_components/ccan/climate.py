@@ -119,8 +119,6 @@ class CCAN_Climate(ClimateEntity):
         self._target_temperature = None
         self._current_temperature = None
 
-        self._attr_unique_id = "378102xX"
-
         # self._attr_target_temperature_low = 18
         # self._attr_target_temperature_high = 25
 
@@ -171,18 +169,10 @@ class CCAN_Climate(ClimateEntity):
 
         self.coordinator.register_entity(self)
 
-    # @property
-    # def device_class(self) -> str:
-    #    """Return device class."""
-    #    # https://developers.home-assistant.io/docs/core/entity/binary-sensor#available-device-classes
-    #    return ClimateEntity
-
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information."""
-        # Identifiers are what group entities into the same device.
-        # If your device is created elsewhere, you can just specify the indentifiers parameter.
-        # If your device connects via another device, add via_device parameter with the indentifiers of that device.
+       
 
         return DeviceInfo(
             name=self._name,
@@ -207,11 +197,6 @@ class CCAN_Climate(ClimateEntity):
         # changing it later will cause HA to create new entities.
         return f"{DOMAIN}-{self.device.get_name()}"
 
-    # @property
-    # def data(self):
-    #    """Return device data."""
-    #    return self.coordinator.data.devices[30]
-
     def get_variables(self):
         return [
             ("CURRENT_TEMPERATURE", self.set_current_temperature),
@@ -225,17 +210,6 @@ class CCAN_Climate(ClimateEntity):
     def current_temperature(self) -> int | None:
         """Return current temperature."""
         return self._current_temperature
-
-    # def set_current_temperature(self, **kwargs: Any) -> None:
-    #    asyncio.run(self.async_set_temperature(kwargs))
-    # self._current_temperature = value
-    # print(f"New event CURRENT_TEMPERATURE : {value}")
-    # self.schedule_update_ha_state()
-
-    # def set_target_temperature(self, value):
-    #    print(f"New event TARGET_TEMPERATURE : {value}")
-    #    self._target_temperature = value
-    #    self.schedule_update_ha_state()
 
     def set_heating_state_on(self, **kwargs: Any):
         self.set_heating_state(True)
@@ -306,13 +280,6 @@ class CCAN_Climate(ClimateEntity):
         print(self._enabled, self._current_temperature)
         return self._enabled and self._current_temperature is not None
 
-    # @property
-    # def extra_state_attributes(self) -> dict[str, Any]:
-    #    """Return the optional state attributes."""
-    #    if (data := self.data) is not None:
-    #        return {"error_code": 0}
-    #    return {}
-
     def set_current_temperature(self, value):
         if value > -100 and value < 100:
             self._current_temperature = value
@@ -324,11 +291,12 @@ class CCAN_Climate(ClimateEntity):
             self.coordinator.connector.set_destination_address(
                 PlatformDefaults.BROADCAST_CCAN_ADDRESS
             )
-            await asyncio.to_thread(self.ha_library.send, self.device, "SET_TARGET_TEMPERATURE", temperature)
-       
+            await asyncio.to_thread(
+                self.ha_library.send, self.device, "SET_TARGET_TEMPERATURE", temperature
+            )
+
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
-        """Set the hvac mode."""
-        # self._hvac_mode = hvac_mode
+        """Set the hvac mode."""    
         if hvac_mode == HVACMode.AUTO or hvac_mode == HVACMode.HEAT:
             await self.async_turn_on()
         elif hvac_mode == HVACMode.OFF:
@@ -336,15 +304,15 @@ class CCAN_Climate(ClimateEntity):
 
     async def async_turn_off(self) -> None:
         """Turn off."""
-        await asyncio.to_thread(self.ha_library.send, self.device, "TURN_OFF")      
+        await asyncio.to_thread(self.ha_library.send, self.device, "TURN_OFF")
 
     async def async_turn_on(self) -> None:
         """Turn on."""
-        await asyncio.to_thread(self.ha_library.send, self.device, "TURN_ON")      
-        
-    @property
-    def extra_state_attributes(self) -> dict[str, Any]:
-        """Return the optional state attributes."""
-        if (data := self.device) is not None:
-            return {"error_code": 0}
-        return {}
+        await asyncio.to_thread(self.ha_library.send, self.device, "TURN_ON")
+
+    #@property
+    #def extra_state_attributes(self) -> dict[str, Any]:
+    #    """Return the optional state attributes."""
+    #    if (data := self.device) is not None:
+    #        return {"error_code": 0}
+    #    return {}

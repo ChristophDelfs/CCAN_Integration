@@ -19,11 +19,12 @@ from .coordinator import CCAN_Coordinator
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [
-    # Platform.BINARY_SENSOR,
+    Platform.BINARY_SENSOR,
     Platform.LIGHT,
     Platform.SENSOR,
     Platform.CLIMATE,
-    Platform.COVER,  
+    Platform.COVER,
+    Platform.SWITCH
 ]
 
 
