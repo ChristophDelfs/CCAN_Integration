@@ -137,10 +137,11 @@ class CCAN_WindowSensor(BinarySensorEntity):
 
     def set_window_state(self, value) -> None:
         self._closed = value
+        print(f"Fenster {self._closed}")
         self.schedule_update_ha_state()
 
     def set_window_closed(self, **kwargs: Any) -> None:
-        self.set_state(True)
+        self.set_window_state(True)
 
     def set_window_open(self, **kwargs: Any) -> None:
-        self.set_state(False)
+        self.set_window_state(False)
