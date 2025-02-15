@@ -63,7 +63,10 @@ class CCAN_Cover(CoverEntity):
 
     _attr_device_class = CoverDeviceClass.SHUTTER
     _attr_supported_features: CoverEntityFeature = (
-        CoverEntityFeature.OPEN | CoverEntityFeature.CLOSE | CoverEntityFeature.STOP | CoverEntityFeature.SET_POSITION
+        CoverEntityFeature.OPEN
+        | CoverEntityFeature.CLOSE
+        | CoverEntityFeature.STOP
+        | CoverEntityFeature.SET_POSITION
     )
 
     def __init__(
@@ -174,6 +177,7 @@ class CCAN_Cover(CoverEntity):
 
     def set_cover_position(self, value):
         self._position = 100 - int(value)
+        self.schedule_update_ha_state()
 
     @property
     def is_closing(self) -> bool:
@@ -242,7 +246,7 @@ class CCAN_Cover(CoverEntity):
         """Move the cover to a specific position."""
         if (position := kwargs.get(ATTR_POSITION)) is not None:
             await asyncio.to_thread(
-                self.ha_library.send, self.device, "SET_POSITION", 100-position
+                self.ha_library.send, self.device, "SET_POSITION", 100 - position
             )
         self.async_write_ha_state()
 
