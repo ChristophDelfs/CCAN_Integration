@@ -1,3 +1,4 @@
+import struct
 from api.resolver.ResolverError import ResolverError
 #from lark import Lark, InlineTransformer
 from lark import Lark, Visitor
@@ -47,6 +48,7 @@ class ParameterStore(Visitor): #InlineTransformer):
     ?product: atom
         | product "*" atom  -> mul_func
         | product "/" atom  -> div_func
+        | product "^" atom  -> pow_func
         | "(" sum ")"
 
     ?atom: NUMBER               -> number
@@ -170,6 +172,10 @@ class ParameterStore(Visitor): #InlineTransformer):
     
     def div_func(self,arg1,arg2):
         result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '/')
+        return result  
+
+    def pow_func(self,arg1,arg2):
+        result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '^')
         return result  
 
     def neg_func(self,arg):
@@ -431,6 +437,14 @@ class ParameterStore(Visitor): #InlineTransformer):
             result = operand1 + operand2
         elif operator == "-":
             result = operand1 - operand2
+        elif operator == "^":
+            result = operand1**operand2            
+
+        elif operator == "&":
+            result = operand1 and operand2        
+        elif operator == "|":
+            result = operand1 or operand2        
+
         else:
             raise AttributeError
 
@@ -634,6 +648,10 @@ class ParameterStore(Visitor): #InlineTransformer):
                 div_steps = 2
             elif target_format == "UINT8" or target_format == "INT8":
                 div_steps = 1
+            elif target_format == "FLOAT":
+                # convert 4-Byte-binary representation of a float to a single integer:
+                value = int(struct.unpack('<I', struct.pack('<f', value))[0])
+                div_steps = 4
             else:
                 raise ResolverError(None,"Internal Error in convert_param_list_to_byte_array - unsupported type:" + str(target_format))
             

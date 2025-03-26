@@ -1,4 +1,6 @@
 import time
+import signal
+
 from api.cli.interactions.automation.AutomationInteraction import AutomationInteraction
 from api.base.Report import Report, ReportLevel
 from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
@@ -13,6 +15,7 @@ from api.cli.interactions.controller.WaitForBootloader import WaitForBootloader
 from api.cli.download.DownloadRobot import DownloadRobot
 from api.base.PlatformServices import PlatformServices
 from api.PyCCAN_Warnings import CCAN_Warnings
+from api.connect.FTP_Services import FTPFileServices
 
 class AutomationUpdate(AutomationInteraction): 
     def __init__(self, my_connector, my_waiting_time, my_retries,my_target_automation, my_enforce_flag, my_automation_file):         
@@ -45,43 +48,35 @@ class AutomationUpdate(AutomationInteraction):
 
         # unknown whether all controllers are "visible":
         self._all_controllers_visible  = None
-        
+     
+    def on_interrupt(self,my_signal, frame):
+         Report.push_level(ReportLevel.VERBOSE)      
+         Report.print(ReportLevel.VERBOSE,"Update interrupted.")
+         self._connector.disconnect()
+         exit()
+
     def do(self):     
+       
         Report.print(ReportLevel.VERBOSE,"All controllers will be locked during update in bootloader mode.\n")
         
-        Report.push_level(ReportLevel.ERROR)       
-
         # check whether compiled automation file is ok for an automatic update:
         self._check_automation_fitness()
 
         # check whether network fits to compiled automation file:
         self._check_network_fitness()
+      
+        # reset and lock controllers stepwise. This ensures that all controllers - even without a valid configuration - can receive a CCAN address and remain accessible.      
+        Report.print(ReportLevel.VERBOSE,"Locking CAN controllers: ")
+        self.reset_and_lock_controllers(self._base.get_can_controller(),True)       
+        Report.print(ReportLevel.VERBOSE,"Locking Ethernet controllers: ")
+        self.reset_and_lock_controllers(self._base.get_ethernet_controller(),True)
 
-              
-        # reset into bootloader:   
-        try:                      
-            answers = BroadcastReset(self._connector, self._base._platform_configuration["RESPONSE_WAITING_TIME"], 1).do()
-        except:
-            answers = []
-        
-        if answers is None or len(answers) != self._base.get_number_of_controllers_in_network():
-            raise CCAN_Error(CCAN_ErrorCode.UPDATE_FAILURE," Only " + str(len(answers)) + " engines responded and entered bootloader (expected : " + str(self._base.get_number_of_controllers_in_network()) + ")")
+
 
         # disable automation for all other listeners:
         self._connector.mark_current_automation_as_invalid()
-
-        # wait for first ethernet controller:
-        self._connector.wait_for_event(10,"LIFE_SERVICE::CONTROLLER_RESET()")
-
-        # and lock all controllers:
-        try:                      
-            answers = BroadcastLock(self._connector, self._base._platform_configuration["RESPONSE_WAITING_TIME"], 1).do()
-        except:
-            answers = []
-        Report.pop_level()   
-
-        # update controllers with Ethernet connection:
-
+      
+        # update controllers with Ethernet connection:     
         Report.print(ReportLevel.VERBOSE,"..Updating controllers with Ethernet connection..\n")   
         self._do_update_loop(self._base.get_ethernet_controller(), False)
 
@@ -104,36 +99,57 @@ class AutomationUpdate(AutomationInteraction):
             answers = []
 
         Report.pop_level()   
-       
+    
         # update controllers with CAN connection:
         Report.print(ReportLevel.VERBOSE,"..Updating controllers with CAN connection..\n")   
         self._do_update_loop(self._base.get_can_controller(),True)
-       
+    
 
         Report.print(ReportLevel.VERBOSE,"..Update completed, unlocking all controllers..\n")
 
-        # ship info on new automation to all listeners_
-        self._connector.announce_new_automation(self._base.get_automation_file())
 
-
+        self._connector.get_automation_file()
+        ftp = FTPFileServices(self._platform_configuration)
+        ftp.push_to_ftp_server( self._connector.get_automation_file())
+        Report.print(ReportLevel.VERBOSE,(f"File {self._connector.get_automation_file()} zum ftp Server übertragen.\n"))
+       
         time.sleep(1)
         Report.push_level(ReportLevel.NONE)                             
         answers = BroadcastReset(self._connector, self._base._platform_configuration["RESPONSE_WAITING_TIME"], 1).do()
+        
+        # ship info on new automation to all listeners_
+        self._connector.announce_new_automation(self._base.get_automation_file())
+
         if len(answers) != len(self._base.get_ccan_addresses_from_network()):
             Report.print(ReportLevel.VERBOSE,"Final reset was not successful. Likely, not all controllers are unlocked now.\n")
             return False
+        
         return True
 
 
-    def _do_update_loop(self,my_address_list, my_lock_flag):        
-    
-        uuid_map = self._base.get_uuid_map_from_automation()
-      
-        for address in my_address_list:
-            # get uuid:
-            uuid = uuid_map[address]
+    def reset_and_lock_controllers(self, my_address_list, my_lock_flag):
+        ''' Resets and locks a defined set of controllers in bootloader.'''
 
-            current_address = self._base.get_current_address_via_uuid(uuid)
+        for controller_address in my_address_list:
+            # reset into bootloader:   
+            try:                
+                self._connector.set_destination_address(self.get_current_controller_address(controller_address))              
+                Report.push_level(ReportLevel.ERROR)       
+                Reset(self._connector, 2, True).do()
+                if my_lock_flag:
+                    Lock(self._connector,1).do()                          
+                    Report.pop_level()      
+                    Report.print(ReportLevel.VERBOSE,".")
+                else:
+                    Report.pop_level()      
+            except CCAN_Error as ex:
+                raise CCAN_Error(CCAN_ErrorCode.UPDATE_FAILURE,"Not all controllers have responded when requesting reset and lock.")                        
+        Report.print(ReportLevel.VERBOSE,"\n")                
+
+    def _do_update_loop(self,my_address_list, my_lock_flag):        
+               
+        for address in my_address_list:           
+            current_address = self.get_current_controller_address(address)
             if current_address is None:
                 CCAN_Warnings.warn(None, "Controller with address " + str(address) + " is not available in network. Skipped.")
                 continue
@@ -156,7 +172,7 @@ class AutomationUpdate(AutomationInteraction):
                 else:
                     break
             if attempts == 0:
-                CCAN_Warnings(" Controller " + controller_name + " with UUID " + uuid + " and current address in automation " + str(current_address) + " could not be updated. Skipping..")
+                CCAN_Warnings(f" Controller {controller_name} with current address in automation {current_address} could not be updated. Skipping..")
              
 
         # end
@@ -243,12 +259,13 @@ class AutomationUpdate(AutomationInteraction):
         self._all_controllers_visible = True
 
         for address in self._base.get_ccan_addresses_from_automation():
+            current_address = self.get_current_controller_address(address)
             # get uuid:
-            uuid = self._base.get_uuid(address)
+            #uuid = self._base.get_uuid(address)
 
             # get the address of a controller with the same UUID in the network
             # current_address is None if the UUID is not available in the network
-            current_address = self._base.get_current_address_via_uuid(uuid)
+            #current_address = self._base.get_current_address_via_uuid(uuid)
 
             # the controller is not visible? If yes -> skip further evaluation, but remember that not all controllers are visible:            
             if current_address is None:
@@ -271,3 +288,9 @@ class AutomationUpdate(AutomationInteraction):
             raise CCAN_Error(CCAN_ErrorCode.UPDATE_FAILURE," Failing to wait for bootloader startup")
 
 
+
+    def get_current_controller_address(self, address):
+        uuid = self._base.get_uuid(address)
+        # get the address of a controller with the same UUID in the network
+        # current_address is None if the UUID is not available in the network
+        return self._base.get_current_address_via_uuid(uuid)

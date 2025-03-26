@@ -128,7 +128,7 @@ class CCAN_Switch(CoordinatorEntity, SwitchEntity):
 
     @property
     def initialized(self):
-        return self._state is not None  
+        return self._state is not None
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -149,7 +149,6 @@ class CCAN_Switch(CoordinatorEntity, SwitchEntity):
                 self.device, "suggested_area"
             ),
         )
-
 
     @property
     def name(self) -> str:
@@ -174,11 +173,11 @@ class CCAN_Switch(CoordinatorEntity, SwitchEntity):
 
     def turn_on(self) -> None:
         """Instruct the device to turn on. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
-        self.ha_library.send(self.device, "TURN_ON")          
+        self.ha_library.send(self.device, "TURN_ON")
 
     def turn_off(self) -> None:
         """Instruct the device to turn off. This method does not change the state itself. This is done after receiving an update from the CCAN network."""
-        self.ha_library.send(self.device, "TURN_OFF")     
+        self.ha_library.send(self.device, "TURN_OFF")
 
     def external_update_on(self, *args) -> None:
         self.update(True)

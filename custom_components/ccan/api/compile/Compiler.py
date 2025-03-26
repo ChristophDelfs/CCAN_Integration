@@ -10,13 +10,10 @@ from api.resolver.Resolver import Resolver
 from api.resolver.Definitions import BinaryConfig
 from api.resolver.Definitions import LocationInfo
 
-from api.ConfigurationManager import ConfigurationManager
 from api.base.PlatformConfiguration import PlatformConfiguration
 
 from   api.compile.ControllerStore import ControllerStore
 import api.compile.CompilerHelper as CompilerHelper
-
-from api.connect.FTP_Services import FTPFileServices
 
 from api.base.CCAN_Defaults import CCAN_Defaults
 from api.PyCCAN_Warnings import CCAN_Warnings
@@ -39,11 +36,6 @@ class Compiler:
         pf = PlatformConfiguration()
         pf.load()
         self._platform_configuration = pf.get()
-
-        ftp = FTPFileServices(self._platform_configuration)
-        ftp.push_to_ftp_server(self.__basename,output_path+"/" + self.__basename)
-        print("File " + self.__basename + " zum ftp Server übertragen.")
-
 
     def get_resolver(self):
         return self.__resolver

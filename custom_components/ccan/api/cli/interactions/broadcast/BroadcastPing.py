@@ -2,6 +2,7 @@ from api.cli.interactions.broadcast.BroadcastInteraction import BroadcastInterac
 from api.base.Report import ReportLevel, Report
 from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 import time
+import signal
 
 class BroadcastPing(BroadcastInteraction): 
     def __init__(self, my_connect, my_waiting_time, my_number_of_pings, my_ping_delay): 
@@ -13,6 +14,7 @@ class BroadcastPing(BroadcastInteraction):
         self._connect = my_connect
         self._number_of_pings = my_number_of_pings
         self._waiting_time = my_waiting_time
+        signal.signal(signal.SIGINT, self.on_interrupt)
         
     def do(self):           
         self.set_request("LIFE_SERVICE::PING()")

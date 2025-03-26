@@ -164,10 +164,13 @@ class TransformingParser(Transformer):
     ?sum: product 
         | sum "+" product   -> add_func
         | sum "-" product   -> sub_func
+        | sum "&" product   -> and_func
+        | sum "|" product   -> or_func
       
     ?product: atom
-        | product "*" atom  -> mul_func
+        | product "*" atom  -> mul_func    
         | product "/" atom  -> div_func
+        | product "^" atom  -> pow_func
         | "(" sum ")"
 
     ?atom: NUMBER               -> number     
@@ -301,12 +304,24 @@ class TransformingParser(Transformer):
         result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '-')
         return result        
 
+    def and_func(self,arg1,arg2):
+        result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '&')
+        return result 
+
+    def or_func(self,arg1,arg2):
+        result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '|')
+        return result 
+
     def mul_func(self,arg1,arg2):
         result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '*')
         return result  
     
     def div_func(self,arg1,arg2):
         result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '/')
+        return result  
+
+    def pow_func(self,arg1,arg2):
+        result = FunctionExpression(operand1= arg1,operand2 = arg2, operator = '^')
         return result  
 
     def neg_func(self,arg):

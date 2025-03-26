@@ -8,7 +8,7 @@ class AutomationDump(AutomationInteraction):
         
         super().__init__(my_connector,  my_waiting_time, my_retries, my_automation_file)      
         self._filter = my_filter    
-        signal.signal(signal.SIGINT, self.on_interrupt)
+        #signal.signal(signal.SIGINT, self.on_interrupt)
         my_connector.run_on_updated_automation(self.say_hello)
 
     def do(self):        

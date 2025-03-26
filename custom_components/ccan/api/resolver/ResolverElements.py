@@ -1,7 +1,9 @@
 from enum import Enum
 from numbers import Number
 from dataclasses import dataclass
-
+import hashlib
+import struct
+import pickle
 # from PyCCAN_ParameterStore import ParameterStore
 from .ResolverError import ResolverError
 
@@ -618,31 +620,34 @@ class ResolvedEventInstance(ResolvedInstanceBase):
     def get_direction(self):
         return str(self.__direction)
 
+    #def __eq__(self, other, *attributes):
+    #    if not isinstance(other, type(self)):
+    #        return False
+    #    
+    #    if attributes:
+    #        d = float('NaN')  # default that won't compare equal, even with itself
+    #        return all(self.__dict__.get(a, d) == other.__dict__.get(a, d) for a in attributes)
+    #    
+    #    return self.__dict__ == other.__dict__
+
     ########################################################
     ### functions to define behaviour event hashing in maps:
     # see https://www.asmeurer.com/blog/posts/what-happens-when-you-mess-with-hashing-in-python/
     def __hash__(self):
-        # path and key:
-        full_name = self.get_full_name()
-        hash_seq = [full_name]
-        # parameter:
-        parameter_set = self.get_description_list("PARAMETER")
-        if len(parameter_set) > 0:
-            for param in parameter_set:
-                value = param.get_value()
+        return ResolvedEventInstance.calculate_hash(self)
 
-                # discard expression lists:
-                if isinstance(value, list):
-                    value = None
+    @staticmethod
+    def calculate_hash(my_object):    
 
-                hash_seq.append(value)
-        hash_value = hash(frozenset(hash_seq))
+       pseudo_object = [ my_object.get_full_name(), my_object.get_id(), my_object.get_description_list("PARAMETER")]
 
-        return hash_value
-
+       return int(hashlib.sha256(pickle.dumps(pseudo_object,1)).hexdigest(),16) % (10 ** 64)       
+    
     def __eq__(self, other):
-        e1 = hash(self)
-        e2 = hash(other)
+        if not isinstance(other, ResolvedEventInstance):
+            return False
+        e1 =  ResolvedEventInstance.calculate_hash(self)
+        e2 =  ResolvedEventInstance.calculate_hash(other)
         return e1 == e2
 
     #########################################################
@@ -664,6 +669,21 @@ class ResolvedEventInstance(ResolvedInstanceBase):
                 return MappingType("VARIABLE")
 
         return MappingType("FIXED")
+
+    def __str__(self):
+        result = self.get_full_name() + "("
+        parameters = self.get_description_list("PARAMETER")
+        if parameters is not None:
+            for parameter in parameters:
+                try:
+                    result += str(parameter) +" ,"     
+                except:
+                    result += "expression ,"
+                
+            result = result[:-1]
+
+        return result +")"
+    
 
     def get_id_set(self):
         (event_path_name, event_path_id) = self.get_description_list("EVENT_PATH")

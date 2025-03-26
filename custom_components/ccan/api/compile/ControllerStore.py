@@ -318,19 +318,7 @@ class ControllerStore ():
         for parameter in mapping_description.parameter_set:
             if isinstance(parameter.value,list):                                         
                 self.__write_expression_parameter(my_writer,parameter)
-            else:
-                #if isinstance(parameter,VariableParameterSet) and parameter.variable_flag == 1:
-                #    my_writer.write_parameter("VariableDataIndicator",1,"UINT8")   
-                #    my_writer.write_parameter("VariableFormat",OperandTypeKey[parameter.type],"UINT8")   
-                #    my_writer.write_parameter("VariableID",parameter.value,"UINT16")
-                #    
-                #elif isinstance(parameter,VariableParameterSet) and parameter.variable_flag == 0:
-                #    my_writer.write_parameter("VariableDataIndicator",0,"UINT8")   
-                 #   my_writer.write_parameter(parameter.name,parameter.value,parameter.type)
-                #else:
-                #    my_writer.write_parameter(parameter.name,parameter.value,parameter.type)
-                pass
-            
+
         my_writer.close_parameter_list()
 
 
@@ -400,6 +388,11 @@ class ControllerStore ():
                 
                 for sorted_source_event in sorted_source_events:                
                     target_events = master_list_of_maps[protocol_type][mapping_type][sorted_source_event]
+
+                    # create pseudo target:
+                    if len(target_events) == 0:
+                        target_events =  [ None ]
+                    
                     for target_event in target_events:
                     
                         try:

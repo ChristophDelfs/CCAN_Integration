@@ -32,7 +32,7 @@
     "IP_ADDRESS" : "192.168.2.153",
     "LOGIN"   :  "hassio",
     "PASSWORD": "Sprutel98_98",
-    "TEMPORARY_AUTOMATION_FILE" : "tmp/automation.pkl"
+    "TEMPORARY_AUTOMATION_FILE" : "/tmp/automation.pkl"
   },
 
 

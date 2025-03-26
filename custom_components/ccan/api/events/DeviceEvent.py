@@ -66,11 +66,15 @@ class DeviceEvent(RawEvent):
                 (parameter_set_names, parameter_set_formats) = (
                     device_event.get_description_list("PARAMETER")
                 )
-
-                self.__parameters = Parameters(
-                    seq, parameter_set_names, parameter_set_formats
-                )
-                self.__parameter_seq = self.__parameters.get_sequence()
+                try:
+                    self.__parameters = Parameters(
+                        seq, parameter_set_names, parameter_set_formats
+                    )
+                    self.__parameter_seq = self.__parameters.get_sequence()
+                except IndexError:
+                    self.__event_name = "Unknown Event with ID " + str(self.__event_id)
+                    self.__parameters = None
+                    self.__parameter_seq = [] 
 
     def is_complete(self):
         return True

@@ -1,12 +1,8 @@
-import signal
-import os
 import time
-from pathlib import Path
 
 from api.base.CCAN_Error import CCAN_Error
 from api.base.CCAN_Defaults import CCAN_Defaults
 from api.base.PlatformConfiguration import PlatformConfiguration
-from api.base.Report import Report, ReportLevel
 
 
 class Interaction:
@@ -26,16 +22,15 @@ class Interaction:
         self._ccan_defaults.init_from_pkl(default_file)
 
         self._platform_configuration = PlatformConfiguration().get()
-        # signal.signal(signal.SIGINT, self.on_interrupt)
-
+     
     def set_request(self, my_request):
-        if my_request != None:
+        if my_request is not None:
             self._request = self._connector.resolve_event(my_request)
         else:
             self._request = None
 
     def set_expected_answers(self, my_answers):
-        if my_answers == None:
+        if my_answers is None:
             self._expected_answers = None
             return
 
@@ -109,7 +104,3 @@ class Interaction:
 
     def on_loop_end(self):
         raise NotImplementedError
-
-    def on_interrupt(self, my_signal, frame):
-        Report.print(ReportLevel.WARN, "\nInterrupted by user..\n")
-        quit()

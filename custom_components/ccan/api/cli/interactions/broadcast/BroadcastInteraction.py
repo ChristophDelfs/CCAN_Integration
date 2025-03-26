@@ -17,9 +17,7 @@ class BroadcastInteraction(Interaction):
         self._collected_answers = []
         self._collected_values = {}
         self._retries = my_retries
-        my_connect.set_destination_address(PlatformDefaults.BROADCAST_CCAN_ADDRESS)
-
-        # signal.signal(signal.SIGINT, self.on_interrupt)
+        my_connect.set_destination_address(PlatformDefaults.BROADCAST_CCAN_ADDRESS)   
 
     def get_collected_anwers(self):
         return self._collected_answers
@@ -36,18 +34,19 @@ class BroadcastInteraction(Interaction):
 
         self._end_loop = False
 
-        while self._end_loop == False and self._retries != 0:
+        while not self._end_loop and self._retries != 0:
             self.before_send()
 
             # send:
-            if self._request != None:
+            if self._request is not None:
                 self._connect.send_event(self._request)
 
             # receive:
+            start_time = time.time()
             remaining_time = self._waiting_time
             while remaining_time > 0:
                 try:
-                    start_time = time.time()
+                   
                     received_event, index = self._connect.wait_for_event_list(
                         remaining_time, self._expected_answers
                     )
@@ -55,7 +54,7 @@ class BroadcastInteraction(Interaction):
                     self._end_loop = (
                         self.on_receive(received_event, index) or self._end_loop
                     )
-                    if self._end_loop == True:
+                    if self._end_loop:
                         break
 
                     self._collected_values[received_event.get_sender_address()] = (
@@ -65,7 +64,7 @@ class BroadcastInteraction(Interaction):
                 except CCAN_Error as ex:
                     pass
 
-                remaining_time -= time.time() - start_time
+                remaining_time = start_time + self._waiting_time -time.time()
             self._retries -= 1
 
             # react in iteration end:
@@ -89,5 +88,4 @@ class BroadcastInteraction(Interaction):
     def on_loop_end(self):
         raise NotImplementedError
 
-    def on_interrupt(self, my_signal, frame):
-        Report.print(ReportLevel.WARN, "\nInterrupted.")
+

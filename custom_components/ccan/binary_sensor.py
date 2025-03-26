@@ -145,3 +145,4 @@ class CCAN_WindowSensor(BinarySensorEntity):
 
     def set_window_open(self, **kwargs: Any) -> None:
         self.set_window_state(False)
+        

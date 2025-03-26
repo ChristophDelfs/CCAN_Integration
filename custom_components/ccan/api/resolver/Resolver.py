@@ -1,6 +1,6 @@
 import pickle
 from numbers import Number
-import copy
+import hashlib
 
 
 # Parser Definitions:
@@ -19,6 +19,7 @@ from .Definitions import (
 from .Definitions import (
     ParsedGeneralAppDescription,
     ParsedAutomation,
+    ParsedVariableName,
     ParsedSensorDriverDescriptionList,
     ParsedTransportAdapterDescriptionList,
 )
@@ -931,9 +932,10 @@ class Resolver:
         variable_description_map = descriptor.get_description_list(
             "VARIABLE"
         )                    
-        equivalent_map, prefix_map = self.resolve_equivalent_list(parsed_instance.equivalent_list,event_description_map, variable_description_map, prefix, parameter_store)
+        equivalent_map, prefix_map, open_parameters = self.resolve_equivalent_list(parsed_instance.equivalent_list,event_description_map, variable_description_map, prefix, parameter_store)
         resolved_instance.insert_description_list("EQUIVALENT_MAP",equivalent_map)
         resolved_instance.insert_description_list("EVENT_PREFIX_MAP",prefix_map)
+        resolved_instance.insert_description_list("OPEN_PARAMETERS_LIST",open_parameters)
                 
         self.resolver_store.insert_instance("HOME_ASSISTANT_DEVICE",resolved_instance)
 
@@ -1374,6 +1376,7 @@ class Resolver:
 
     def __resolve_template_event(self,my_template_event,my_parameter_store):
         result = []
+
         template_event_collectors = (
             EventCollectorFactory.create_event_collectors_from_event(
                 my_template_event, self.resolver_store.get_instance_dictionary("DEVICE") )
@@ -1388,7 +1391,14 @@ class Resolver:
                         parameter_collector_copy, my_parameter_store
                     )
                 )
-            result.append(event)
+            if event not in result:
+                result.append(event)
+            else:
+                raise ResolverError(
+                   my_template_event.get_location(),
+                    "When resolving this template event, a target event has been identified twice. Please check!"
+                )
+
         return result
 
 
@@ -1628,17 +1638,36 @@ class Resolver:
 
         
         selected_mapping_table = self.resolver_store.get_mapping_table(target_protocol, mapping_method)
-
-        #from_name = from_event.get_full_name()
-
+    
         try:
             existing_mapping_targets = selected_mapping_table[from_event]
-            existing_mapping_targets.append(to_event)
+         
+            #print(f"From Event gibt es schon: {from_event}")
 
+            #others = [ str(existing)+"," for existing in existing_mapping_targets]
+ 
+
+            #print(f"     .... Vergleich von {to_event}  mit {others}")
+            if to_event not in existing_mapping_targets:
+            #    print(f"     .. mapping auf {to_event} ergänzt")
+                existing_mapping_targets.append(to_event)
+            else:
+                matches = [ event for event in existing_mapping_targets if event == to_event]
+                raise ResolverError(
+                    to_event.get_location(),
+                    f"This mapping has been defined twice. First occasion was in {matches[0].get_location()}.")
         except KeyError:
-            selected_mapping_table[from_event] = [to_event]
-
-      
+            if to_event is not None:
+                #print (f"Neues From-Event: {from_event}")
+                #if from_event.get_full_name() == "device_under_test.VoltageChecker::LOW":
+                #    pass
+            
+                #print (f"   mapping auf {to_event}")
+                selected_mapping_table[from_event] = [to_event]
+            else:
+                selected_mapping_table[from_event] = []
+                #print (f"Neues From-Event: {from_event} mit leerem to_event!")
+            
     #######################################
 
 
@@ -1662,8 +1691,8 @@ class Resolver:
                 equivalent_map[equivalent_entry.name]
                 raise ResolverError(equivalent_entry.location_info,f"For {equivalent_entry.name} an equivalence has already been defined.")
             except KeyError:
-                pass
-            
+               pass
+
             # resolve equivalence name if possible:                             
             try:  
                 # operation fails with  KeyError for state variables, see except handling:    
@@ -1672,11 +1701,17 @@ class Resolver:
                 parsed_event_list = equivalent_entry.equivalent
                 if not isinstance(parsed_event_list,list):
                     parsed_event_list = [ parsed_event_list]
-
+               
                 equivalent_map[equivalent_entry.name] = []              
                 prefix_map[equivalent_entry.name]     = []
 
                 for parsed_event in parsed_event_list:
+
+                    if isinstance(parsed_event,ParsedVariableName):                        
+                        raise ResolverError(equivalent_entry.location_info,f"For the event equivalent {equivalent_entry.name} you have provided a variable.")      
+                       
+
+
                     resolved_equivalent = self. __resolve_parsed_event(parameter_are_optional_flag=True,
                                                                     parsed_event= parsed_event,
                                                                     prefix= my_prefix,
@@ -1691,39 +1726,66 @@ class Resolver:
     
                     # parameter check:
                     device_name, device_id = resolved_equivalent.get_description_list("EVENT_PATH")
-                    event_map = self.resolver_store.get_device_event_map(device_name)               
-                    available_parameters    = event_map.get_by_name(resolved_equivalent.get_name()).get_description_list("PARAMETER")
 
+                    available_parameters = resolved_equivalent.get_description_list("PARAMETER")
                     needed_parameters    = entry.get_description_list("PARAMETER")
-                    if len(available_parameters[0]) != len(needed_parameters[0]):
-                        raise ResolverError(equivalent_entry.location_info,f"For {equivalent_entry.name} the number of parameters does not fit to the equivalent HA device event.")
+
+                    open_parameters = []
+                    for parameter,i in zip(available_parameters, range(len(available_parameters))):                      
+                        parameter_value = my_parameter_store.get_parameter_value(parameter)
+                        if not isinstance(parameter_value, Number) and not isinstance(parameter_value, str):
+                            open_parameters.append(i)
+                                          
+                    event_map = self.resolver_store.get_device_event_map(device_name)         
+                    equivalent_parameters = event_map.get_by_name(resolved_equivalent.get_name()).get_description_list("PARAMETER")
+                  
+
+ 
+                    if len(open_parameters)  != len(needed_parameters[0]):                     
+                        raise ResolverError(equivalent_entry.location_info,f"For {equivalent_entry.name} the number of fixed and open parameters does not fit to the equivalent HA device event. {len(open_parameters)  + len(equivalent_parameters)} open parameters are provided, but {len(needed_parameters[0])} are needed.")
+
+                    for open_parameter_index  in open_parameters:
+                        available_parameter_format = str(available_parameters[open_parameter_index].get_format())
+                        needed_parameter_format    = needed_parameters[1][open_parameter_index]
+                        
+                        if available_parameter_format != needed_parameter_format:
+                             raise ResolverError(equivalent_entry.location_info,f"For {equivalent_entry.name} the parameter {open_parameter_index} must be of type {needed_parameter_format}, but is of type {available_parameter_format}.")   
+
 
                     # TBD: parameter check to be added
-                    if len(available_parameters) > 0:
-                        for parameter_type_needed, parameter_type_available, index in zip(needed_parameters[1], available_parameters[1],range(0,len(available_parameters))):
-                            if parameter_type_needed != parameter_type_available:
-                                raise ResolverError(equivalent_entry.location_info,f"For {equivalent_entry.name} the parameter {index} must be of type {parameter_type_needed}, but is of type {parameter_type_available}.")                    
+                    #if len(available_parameters) > 0:
+                    #    for parameter_type_needed, parameter_type_available, index in zip(needed_parameters[1], available_parameters,range(len(available_parameters))):
+                    #        if parameter_type_needed != parameter_type_available:
+                    #            raise ResolverError(equivalent_entry.location_info,f"For {equivalent_entry.name} the parameter {index} must be of type {parameter_type_needed}, but is of type {parameter_type_available}.")                    
 
                     events_identified += 1
                         
+                    # Remove open parameters in case of "IN" events. The symbolic value is not used and will be replaced when using it in the HA library:
+                    if entry.has_direction("IN") and len(open_parameters) > 0:  
+                        new_available_parameters = []
+                        for parameter,i in zip(available_parameters,range(len(available_parameters))):
+                            if i not in open_parameters:
+                                new_available_parameters.append(parameter)
+                        
+                        resolved_equivalent.insert_description_list("PARAMETER",new_available_parameters)
+
                     prefix = "DEV"
                     # add mappings to simplify usage in case of a template 
                     if resolved_equivalent.is_template():
                         event_list = self.__resolve_template_event(resolved_equivalent,my_parameter_store)
 
                         if entry.has_direction("OUT"):                    
-                            for event in event_list:                                                           
+                            for event in event_list:                                                                                     
                                 self.__add_to_mapping_table(event, resolved_equivalent)                      
                         else:
                             for event in event_list:    
                                 self.__add_to_mapping_table(resolved_equivalent,event)   
-                    elif entry.has_direction("IN"):  
-                        prefix = "DIR"
-                
-                    # Output events shall be shipped via OUTBOUND mapper:
-                    if entry.has_direction("OUT") and not resolved_equivalent.is_template():
+                    else:
+                        if entry.has_direction("OUT"):
                             self.__add_to_mapping_table(resolved_equivalent, None)   
-                    
+                        else:                     
+                            prefix = "DIR"
+                                                                             
                     equivalent_map[equivalent_entry.name].append(resolved_equivalent)
                     prefix_map[equivalent_entry.name].append(prefix)
 
@@ -1754,7 +1816,7 @@ class Resolver:
         
         if variables_identified  < len(my_variable_description_map.get_as_list()):
             raise ResolverError(equivalent_entry.location_info,f"{len(my_variable_description_map.get_as_list())- variables_identified} variables are missing in the equivalence list for current HA device instance.")        
-        return equivalent_map, prefix_map
+        return equivalent_map, prefix_map,open_parameters
 
 
     def resolve_parsed_variable_reference(self, my_parsed_variable_name, my_parameter_store):

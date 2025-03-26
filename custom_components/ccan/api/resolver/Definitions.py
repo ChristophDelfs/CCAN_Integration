@@ -47,7 +47,15 @@ EventDescriptor = namedtuple("EventDescriptor","name id parameters")
 
 #######################################################  PARSER ###########################
 
-LocationInfo      = namedtuple("LocationInfo","file line column")
+from dataclasses import dataclass
+@dataclass
+class LocationInfo:   
+     file: str
+     line: int #","file line column")
+     column: int
+
+     def __str__(self):
+         return f"file {self.file} in line {self.line}"
 
 ParsedAutomation = namedtuple("ParsedAutomation","list")
 ParsedSensorDriverDescriptionList = namedtuple("ParsedSensorDriverDescriptionList","list")

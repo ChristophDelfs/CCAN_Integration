@@ -89,6 +89,7 @@ from api.cli.interactions.automation.AutomationEngineThreadFailures import Autom
 from api.base.PlatformConfiguration import PlatformConfiguration
 from api.base.Report import Report, ReportLevel
 from api.base.CCAN_Error import CCAN_Error
+from api.cli.CliError import CliError, CliErrorCode
 
 from api.connect.Connector import Connector
 
@@ -518,9 +519,15 @@ class CLI():
         else:
             Report.push_level(interaction_reportlevel)
         try:
-            interaction(*parameter).do()
+            interaction(*parameter).do()       
+        except KeyboardInterrupt:
+            Report.print(ReportLevel.ERROR,"\rStopped.\n") 
         except CCAN_Error as error:            
-            Report.print(ReportLevel.ERROR,str(error) + "\n")
+            Report.print(ReportLevel.ERROR,f"{error}\n")
+        except CliError as error:
+            Report.print(ReportLevel.ERROR,f"{error}\n")
+        except Exception as error:
+            Report.print(None,f"Unexpected error : {error}\n")
 
         connector.disconnect()
 

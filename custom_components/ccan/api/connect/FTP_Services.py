@@ -1,15 +1,10 @@
 import os
 import ftplib
 import socket
-import logging
-from pathlib import Path
-from api.base.Report import Report, ReportLevel
 
 from api.base.CCAN_Error import CCAN_Error
 from api.base.CCAN_Error import CCAN_ErrorCode
 # https://www.digitalocean.com/community/tutorials/how-to-set-up-vsftpd-for-a-user-s-directory-on-ubuntu-16-04
-
-_LOGGER = logging.getLogger(__name__)
 
 
 class FTPFileServices:
@@ -34,18 +29,6 @@ class FTPFileServices:
                 CCAN_ErrorCode.CONFIGURATION_ERROR,
                 "FTP Settings are incomplete. Please provide 'IP_ADDRESS', 'LOGIN','PASSWORD' and 'TEMPORARY_AUTOMATION_FILENAME'.",
             )
-
-        if self._automation_filename[0] != os.sep:
-            self._automation_filename = (
-                Path(os.environ["CCAN"]) / self._automation_filename
-            )
-
-        if not Path.is_dir(self._automation_filename.parent):
-            raise CCAN_Error(
-                CCAN_ErrorCode.CONFIGURATION_ERROR,
-                f"Check configuration for TEMPORARY_AUTOMATION_FILE. The resulting path {self._automation_filename.parent} is not valid",
-            )
-        self._automation_filename = str(self._automation_filename)
 
         # check connection:
         try:
@@ -73,8 +56,15 @@ class FTPFileServices:
         fp = open(my_pkl_file_name, "rb")
         my_ftp_pkl_file_name = os.path.basename(my_pkl_file_name)
 
-        session = ftplib.FTP(self._ip_address)
-        session.login(self._login, self._password)
+        try:
+            session = ftplib.FTP(self._ip_address)
+            session.login(self._login, self._password)
+        except ftplib.all_errors:
+            raise CCAN_Error(
+                CCAN_ErrorCode.COMMON_AUTOMATION_NOT_AVAILABLE,
+                "FTP Server is not available.",
+            )
+
         try:
             session.cwd("ccan_files")
         except ftplib.error_perm:
@@ -92,23 +82,12 @@ class FTPFileServices:
         try:
             session.cwd("ccan_files")
         except ftplib.error_perm:
-            raise CCAN_Error(
-                CCAN_ErrorCode.CONFIGURATION_NOT_AVAILABLE,
-                "Could not find defined directory ccan_files on ftp server!",
-            )
+            raise FileNotFoundError
 
         self._temp_file = open(self._automation_filename, "wb")
         try:
             session.retrbinary(f"RETR {my_pkl_file_name}.pkl", self.__callback)
-            Report.print(
-                ReportLevel.VERBOSE,
-                f"Automation file {my_pkl_file_name} read from ftp server.",
-            )
         except ftplib.error_perm:
-            raise CCAN_Error(
-                CCAN_ErrorCode.CONFIGURATION_NOT_AVAILABLE,
-                f"Could not find automation file {my_pkl_file_name} on ftp server!",
-            )
             raise FileNotFoundError
         session.quit()
         self._temp_file.close()

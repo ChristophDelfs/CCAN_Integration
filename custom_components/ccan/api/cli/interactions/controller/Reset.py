@@ -9,7 +9,7 @@ class Reset(Interaction):
   
     def do(self):        
         self.set_request("LIFE_SERVICE::RESET_REQUEST()")
-        if self._wait_for_startup == True:
+        if self._wait_for_startup:
              self.set_expected_answers(["LIFE_SERVICE::CONTROLLER_RESET()"])           
         else:
             self.set_expected_answers(["LIFE_SERVICE::RESET_ACK()"])
@@ -19,16 +19,13 @@ class Reset(Interaction):
     def before_send(self):
         return
 
-    def before_send(self):
-        return
-
     def on_receive(self,my_received_event, my_index):      
-        if self._wait_for_startup == False: 
+        if not self._wait_for_startup: 
             Report.print(ReportLevel.VERBOSE,"Reset has been acknowledged by controller.\n")
         else:
             Report.print(ReportLevel.VERBOSE,"Controller has started bootloader.\n")
 
-        if my_index == 0 and self._wait_for_startup == True:
+        if my_index == 0 and self._wait_for_startup:
             return False
         else:
             return True

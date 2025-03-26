@@ -115,6 +115,10 @@ class CCAN_Cover(CoverEntity):
         return [("POSITION", self.set_initial_cover_position)]
 
     @property
+    def has_entity_name(self) -> bool:
+        return True
+
+    @property
     def device_info(self) -> DeviceInfo:
         """Return device information."""
         # Identifiers are what group entities into the same device.

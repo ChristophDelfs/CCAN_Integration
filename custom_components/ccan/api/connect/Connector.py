@@ -34,7 +34,6 @@ class Connector:
         self._server_port = my_server_port
         self._server_address = (my_server_ip_address, self._server_port)
         self._instance_dictionary = None
-        self._description_dictionary = None
 
         self._udp_client: UDP_Client = None
         self._init = False
@@ -142,6 +141,7 @@ class Connector:
         self._update_hooks.append(my_hook)
 
     def load_automation(self, my_automation_file):
+        print("loading ", my_automation_file)
         self._filename = my_automation_file
         self._init = False
         if self._filename is not None:
@@ -162,6 +162,7 @@ class Connector:
                 self._init = True
             except FileNotFoundError as err:
                 if self._ftp_services is not None:
+                    try:
                         self._read_from_ftp_server(self._filename)
                         self.is_automation_read_from_ftp_server = True
                         self._init = True
@@ -169,6 +170,8 @@ class Connector:
                             ReportLevel.WARN,
                             f"loaded automation {self._filename} from ftp server\n",
                         )
+                    except Exception as err:
+                        pass
 
             if not self._init:
                 raise CCAN_Error(
@@ -189,7 +192,7 @@ class Connector:
     def get_automation_source_file(self):
         return self._filename + ".ccan"
 
-    def get_automation_file(self):    
+    def get_automation_file(self):
         return self._filename + ".pkl"
 
     def resolve_event_list(self, my_symbolic_event_list):
@@ -405,12 +408,9 @@ class Connector:
         self._read_from_file(local_filename)
 
     def _read_from_file(self, my_filename):
-        try:
-            with open(my_filename, "rb") as f:
-                self._description_dictionary = pickle.load(f)
-                self._instance_dictionary = pickle.load(f)
-        except Exception as ex:
-            pass
+        with open(my_filename, "rb") as f:
+            self._description_dictionary = pickle.load(f)
+            self._instance_dictionary = pickle.load(f)
 
         self._event_resolver.set_automation(
             self._description_dictionary, self._instance_dictionary

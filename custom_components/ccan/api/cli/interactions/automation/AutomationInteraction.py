@@ -33,8 +33,7 @@ class AutomationInteraction(Interaction):
         self._waiting_time = AutomationInteraction.AUTOMATION_MAX_WAITING_TIME       
 
         self._number_of_expected_answers = self._base.get_number_of_controllers_in_automation()
-
-        signal.signal(signal.SIGINT, self.on_interrupt)
+   
         Report.pop_level()
   
     def enforce_no_automation_check(self):
@@ -51,17 +50,17 @@ class AutomationInteraction(Interaction):
         self._end_loop = False
         retries = self._retries
 
-        while self._end_loop == False and retries != 0:
+        while not self._end_loop and retries != 0:
       
             self.before_send()
 
             number_of_expected_answers = self._number_of_expected_answers
 
             # send:       
-            if self._request != None:
+            if self._request is not None:
                 self._connector.send_event(self._request)
            
-            if self._no_wait_for_reply == True:
+            if self._no_wait_for_reply:
                 return None
 
             remaining_time = self._waiting_time
@@ -79,7 +78,7 @@ class AutomationInteraction(Interaction):
                     self._end_loop = self.on_receive(received_event, index) or  self._end_loop              
 
                     # collect messages only, if you expect specific answers:
-                    if  collect_answers == True:                      
+                    if  collect_answers:                      
                         self._collected_values[received_event.get_sender_address()] = received_event.get_parameters().get_values()    
                         self._collected_answers.append( (received_event, index))
                 
@@ -88,10 +87,10 @@ class AutomationInteraction(Interaction):
                         print(ex, file=sys.stderr)
                     pass
 
-                if self._end_loop == True:
+                if self._end_loop:
                     break
 
-                if isinstance(self._expected_answers,list) and wait_for_expected_answers == True:                                
+                if isinstance(self._expected_answers,list) and wait_for_expected_answers:                                
                     number_of_expected_answers -= 1
                     if number_of_expected_answers == 0:
                         break
@@ -107,11 +106,7 @@ class AutomationInteraction(Interaction):
 
         # return final processing        
         return self.on_loop_end()
-
-        if isinstance(self._expected_answers,list) and self._check_automation:
-            check_result = self.check_against_automation(list(result[0].keys()))        
-        return result
-
+       
     def check_against_automation(self, my_ccan_addresses):
         # check whether controllers have responded which do not to the automation:        
         controller_names = self._base.get_controller_names()     
@@ -142,6 +137,4 @@ class AutomationInteraction(Interaction):
         
         return missing, unexpected
 
-    def on_interrupt(self,my_signal, frame):
-        Report.print(ReportLevel.WARN,"\nInterrupted.")
         

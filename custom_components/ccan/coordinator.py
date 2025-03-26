@@ -104,43 +104,54 @@ class CCAN_Coordinator(DataUpdateCoordinator):
         except CCAN_Error:
             return False
         # await asyncio.to_thread(connector.setup)
-        await asyncio.to_thread(connector.connect)
-        return connector.is_connected()
+        try:
+            await asyncio.to_thread(connector.connect)
+            return connector.is_connected()
+        except CCAN_Error as ex:
+            pass
 
     async def connect(self):
-        _LOGGER.info("Create Connector")
-        self.connector = await asyncio.to_thread(Connector, self.host, self.port)
-        _LOGGER.info("..connect")
-        await asyncio.to_thread(self.connector.connect)
-        _LOGGER.info("..connect done")
+        try:
+            _LOGGER.info("Create Connector")
+            self.connector = await asyncio.to_thread(Connector, self.host, self.port)
+            _LOGGER.info("..connect")
+            await asyncio.to_thread(self.connector.connect)
+            _LOGGER.info("..connect done")
+        except CCAN_Error as ex:
+            pass
         if self.connector.is_connected():
             _LOGGER.info(
                 "CCAN Integration connected to CCAN server using CCAN address %d",
                 self.connector.get_own_address(),
             )
-            if await self.read_device_information_from_automation():
-                _LOGGER.info(
-                    "CCAN Integration loaded automation file %s",
-                    self.connector.get_automation_file(),
-                )
+            try:
+                if await self.read_device_information_from_automation():
+                    _LOGGER.info(
+                        "CCAN Integration loaded automation file %s",
+                        self.connector.get_automation_file(),
+                    )
 
-                await asyncio.to_thread(self.connector.stay_connected)
+                    await asyncio.to_thread(self.connector.stay_connected)
 
-                # self.connector.run_on_updated_automation(self.update_automation_information)
+                    # self.connector.run_on_updated_automation(self.update_automation_information)
 
-                self.update_thread = threading.Thread(
-                    target=self.read_from_ccan_network
-                )
-                self.update_thread.start()
+                    self.update_thread = threading.Thread(
+                        target=self.read_from_ccan_network
+                    )
+                    self.update_thread.start()
 
-                # just executed at the beginning in background:
-                initialize_job = threading.Thread(target=self.initialize_entity_state)
-                initialize_job.start()
+                    # just executed at the beginning in background:
+                    initialize_job = threading.Thread(
+                        target=self.initialize_entity_state
+                    )
+                    initialize_job.start()
 
-            else:
-                _LOGGER.error(
-                    "CCAN Integration could not load automation file. Unable to proceed!"
-                )
+                else:
+                    _LOGGER.error(
+                        "CCAN Integration could not load automation file. Unable to proceed!"
+                    )
+            except CCAN_Error as ex:
+                pass
 
         else:
             _LOGGER.error(
@@ -292,4 +303,4 @@ class CCAN_Coordinator(DataUpdateCoordinator):
 
             except CCAN_Error as ex:
                 if ex.get_code() != CCAN_ErrorCode.TIME_OUT:
-                    _LOGGER.error("CCAN Thread with unexpected error: %s", str(ex))                   
+                    _LOGGER.error("CCAN Thread with unexpected error: %s", str(ex))

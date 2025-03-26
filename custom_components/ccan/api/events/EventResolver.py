@@ -865,7 +865,7 @@ class EventResolver:
         )
 
     def __derive_parameter_type_from_variable_id(self, my_param):
-        if self.__init == False:
+        if not self.__init:
             raise ValueError
 
         var_tab = self._instance_dictionary["VARIABLE"]

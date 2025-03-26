@@ -2,6 +2,7 @@ from api.cli.interactions.automation.AutomationInteraction import AutomationInte
 from api.base.Report import Report, ReportLevel
 from api.events.RawEvent import RawEvent
 import os
+import pickle
 
 from signal import signal, SIGPIPE, SIG_DFL
 signal(SIGPIPE,SIG_DFL)
@@ -17,7 +18,7 @@ class AutomationReadLog(AutomationInteraction):
     def do(self):
 
         # open log file:
-        if self._file == False:
+        if self._file is False:
             log_filename = os.path.basename(self._connector.get_automation_filename())
         else:
             log_filename = self._file
@@ -27,19 +28,21 @@ class AutomationReadLog(AutomationInteraction):
 
 
         # open log file:
+        print(full_path)
         self._log_file = open(full_path, 'rb')           
-        self._connector._read(self._log_file)
+        self._connector._description_dictionary = pickle.load(self._log_file)
+        self._connector._instance_dictionary = pickle.load(self._log_file)
         counter = 0
 
         while True:
             raw_event = RawEvent.restore_state_from_file(self._log_file)
-            if raw_event == False:
+            if raw_event is False:
                 break           
-          
+        
             resolved_event = self._connector.resolve_raw_event(raw_event)    
             resolved_event.print_with_colors(True)    
             counter +=1
             Report.print(ReportLevel.VERBOSE,'#{:<8}:  '.format(counter) + str(resolved_event)+"\n")
-           
+       
      
 

@@ -3,6 +3,7 @@ import time
 from threading import Thread
 from threading import Event
 from threading import Lock
+import socket
 
 import logging
 # from api.UDP_Client import UDP_Client
@@ -31,7 +32,7 @@ class UDP_Server:
         self.__defaults = PlatformConfiguration().get()
 
         # ensures that these variables are initialized even if later an exception is thrown:
-        if port is PlatformDefaults.INVALID_SERVER_PORT:
+        if port is PlatformDefaults.INVALID_SERVER_PORT or port is None:
             port = self.__defaults["UDP_SERVER"]["DEFAULT_PORT"]
 
         self.__management_socket = None
@@ -116,7 +117,7 @@ class UDP_Server:
                 (message, address) = self.__management_socket.receive(
                     UDP_Server.SOCKET_WAITING_TIME
                 )
-            except TimeoutError:
+            except (TimeoutError,socket.timeout):
                 continue
 
             result = self.__management_socket.get_command(message)
@@ -285,7 +286,7 @@ class UDP_Server:
                 (message, address) = self.__message_socket.receive(
                     UDP_Server.SOCKET_WAITING_TIME
                 )
-            except TimeoutError:
+            except (TimeoutError, socket.timeout):
                 continue
 
             logging.info("Message from " + str(address) + " received.")

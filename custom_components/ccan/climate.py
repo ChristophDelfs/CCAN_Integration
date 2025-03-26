@@ -111,6 +111,8 @@ class CCAN_Climate(ClimateEntity):
 
         self._name = self.ha_library.get_device_parameter_value(device, "name")
 
+        self._attr_entity_id = device.get_name()
+
         # internal states:
         self._heating_control_on = None
         self._heating_is_active = None
@@ -172,7 +174,6 @@ class CCAN_Climate(ClimateEntity):
     @property
     def device_info(self) -> DeviceInfo:
         """Return device information."""
-       
 
         return DeviceInfo(
             name=self._name,
@@ -296,7 +297,7 @@ class CCAN_Climate(ClimateEntity):
             )
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
-        """Set the hvac mode."""    
+        """Set the hvac mode."""
         if hvac_mode == HVACMode.AUTO or hvac_mode == HVACMode.HEAT:
             await self.async_turn_on()
         elif hvac_mode == HVACMode.OFF:
@@ -310,8 +311,8 @@ class CCAN_Climate(ClimateEntity):
         """Turn on."""
         await asyncio.to_thread(self.ha_library.send, self.device, "TURN_ON")
 
-    #@property
-    #def extra_state_attributes(self) -> dict[str, Any]:
+    # @property
+    # def extra_state_attributes(self) -> dict[str, Any]:
     #    """Return the optional state attributes."""
     #    if (data := self.device) is not None:
     #        return {"error_code": 0}

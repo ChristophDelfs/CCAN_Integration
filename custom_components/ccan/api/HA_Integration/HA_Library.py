@@ -33,8 +33,10 @@ class HA_Library:
 
     def wait_for(self, delta, my_device, my_equivalent_name, *args):
         events = self.get_symbolic_event(my_device, my_equivalent_name, *args)
-        event, idx = self.connector.wait_for_event_list(delta, events)
+        event,idx = self.connector.wait_for_event_list(delta,events)
         return event
+
+
 
     def get_symbolic_event(self, my_device, my_equivalent_name, *args) -> str:
         prefix_map = my_device.get_description_list("EVENT_PREFIX_MAP")
@@ -57,7 +59,7 @@ class HA_Library:
     def get_equivalent(self, my_device, my_name):
         return my_device.get_description_list("EQUIVALENT_MAP")[my_name]
 
-    def get_variable_value(self, my_device, my_variable_name, my_delta):
+    def get_variable_value(self,  my_device, my_variable_name, my_delta):
         variable = self.get_equivalent(my_device, my_variable_name)
         # (full_name,variable_id) = connector.identify_variable(variable.get_name())
         variable_id = variable.get_id()

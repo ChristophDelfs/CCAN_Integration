@@ -26,12 +26,12 @@ class AutomationPing(AutomationInteraction):
 
         super().do(collect_answers= False)
 
-    def before_send(self):
+    def before_send(self):      
         self._send_time_stamp = time.time()
        
 
     def on_receive(self,my_received_event, my_index):
-        ccan_address = my_received_event.get_sender_address()
+        ccan_address = my_received_event.get_sender_address()      
         self._roundtrip_time = my_received_event.get_time_stamp()- self._send_time_stamp           
 
         try:          
