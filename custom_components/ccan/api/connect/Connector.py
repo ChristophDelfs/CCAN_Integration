@@ -141,7 +141,6 @@ class Connector:
         self._update_hooks.append(my_hook)
 
     def load_automation(self, my_automation_file):
-        print("loading ", my_automation_file)
         self._filename = my_automation_file
         self._init = False
         if self._filename is not None:
@@ -192,7 +191,7 @@ class Connector:
     def get_automation_source_file(self):
         return self._filename + ".ccan"
 
-    def get_automation_file(self):
+    def get_automation_file(self):      
         return self._filename + ".pkl"
 
     def resolve_event_list(self, my_symbolic_event_list):

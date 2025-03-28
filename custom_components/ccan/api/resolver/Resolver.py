@@ -1961,6 +1961,10 @@ class Resolver:
             )
 
         my_map = descriptor.get_description_list(map_type)
+
+        # list of all used pins:
+        connection_list = []
+
         for pin in parsed_used_list:
             # check for pin name and related offered driver list:
             try:
@@ -2077,9 +2081,16 @@ class Resolver:
                     "CONNECTION", [resolved_connection]
                 )
 
-                # or: pin.alias_name
+                if map_type == "SENSOR_DRIVER" or map_type == "COMMUNICATION_DRIVER":                
+                    try: 
+                        index = connection_list.index(resolved_connection)
+                        raise ResolverError(resolved_connection.get_location(), f"Pin driver {resolved_connection.get_pin_name()} belonging to {resolved_connection.get_app_name()} uses the same pin as the previously defined alias {connection_list[index].get_pin_name()} ")             
+                    except ValueError:
+                        pass
+                    
+                connection_list.append(resolved_connection)                  
                 instance_list.insert(resolved_used_pin)
-
+                
         return instance_list
 
     def __add_alias_event(self, prefix, in_out_type, source_mapping, target_mapping):

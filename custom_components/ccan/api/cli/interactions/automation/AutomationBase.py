@@ -72,16 +72,15 @@ class AutomationBase:
         automation_available = True
         if self._mode == "MIN":
             if self._automation_file is not False:
-                print("Lade aus ", self._automation_file)
                 self.load_automation_data(self._automation_file)
                 self.get_configuration_from_network()
             else:
                 # self.get_configuration_from_network()
-                # print("scan for automation..")
+                #print("scan for automation..")
                 automation_available = self.scan_for_automation()
-                # try:
+                #try:
                 #    print("Automation loaded " + self._automation_file)
-                # except TypeError:
+                #except TypeError:
                 #    print("Gotcha!")
 
         elif self._mode == "MAX":
@@ -98,42 +97,29 @@ class AutomationBase:
             return
 
         self._read_information_from_automation()
-        # self._derive_current_and_target_controller_addresses()
+        #self._derive_current_and_target_controller_addresses()
 
     def load_controller_data_from_network(self):
         self.get_uuid_from_network()
         self.get_configuration_from_network()
         self.get_bootloader_version_from_network()
         if not self.evaluate_network_answers():
-            raise CCAN_Error(
-                CCAN_ErrorCode.UPDATE_FAILURE, "Controller responses incomplete."
-            )
+            raise CCAN_Error(CCAN_ErrorCode.UPDATE_FAILURE,"Controller responses incomplete.")  
+
 
     def _derive_current_and_target_controller_addresses(self):
-        if len(self._controller_map["network"]["uuid"]) < len(
-            self._controller_map["file"]["uuid"]
-        ):
-            raise CCAN_Error(
-                CCAN_ErrorCode.UPDATE_FAILURE,
-                "Less controllers available then needed for the automation update!",
-            )
-
+        if len(self._controller_map["network"]["uuid"]) <  len(self._controller_map["file"]["uuid"]):
+            raise CCAN_Error(CCAN_ErrorCode.UPDATE_FAILURE,"Less controllers available then needed for the automation update!")
+        
         count = 0
         for current_address in list(self._controller_map["network"]["uuid"].keys()):
             for target_address in list(self._controller_map["file"]["uuid"].keys()):
-                if (
-                    self._controller_map["network"]["uuid"][current_address]
-                    == self._controller_map["file"]["uuid"][target_address]
-                ):
-                    self._controller_map["file"]["current_address"][target_address] = (
-                        current_address
-                    )
-                    count += 1
+                if self._controller_map["network"]["uuid"][current_address] == self._controller_map["file"]["uuid"][target_address]:
+                    self._controller_map["file"]["current_address"][target_address] = current_address                                                 
+                    count +=1
         if count != len(self._controller_map["file"]["uuid"]):
-            raise CCAN_Error(
-                CCAN_ErrorCode.UPDATE_FAILURE,
-                "Available controllers do not fit to target automation. Check UUID's!",
-            )
+            raise CCAN_Error(CCAN_ErrorCode.UPDATE_FAILURE,"Available controllers do not fit to target automation. Check UUID's!")
+        
 
     def get_uuid_from_network(self):
         result = BroadcastBoardInfo(self._connector, self._waiting_time, 1).do()
@@ -200,7 +186,7 @@ class AutomationBase:
 
     def evaluate_network_answers(self):
         # check equal number of answers:
-        self._complete_answers = True
+        self._complete_answers = True    
         number_of_answers = len(self._controller_map["network"]["uuid"])
         if (
             len(self._controller_map["network"]["configuration_version"])
@@ -213,8 +199,8 @@ class AutomationBase:
         ):
             self._complete_answers = False
 
-        # print(f"Anzahl UUIDs = {number_of_answers}, number of configuration versions = { len(self._controller_map["network"]["configuration_version"])}, number of files = {len(self._controller_map["network"]["configuration_file"])}")
-        return self._complete_answers
+        #print(f"Anzahl UUIDs = {number_of_answers}, number of configuration versions = { len(self._controller_map["network"]["configuration_version"])}, number of files = {len(self._controller_map["network"]["configuration_file"])}")            
+        return  self._complete_answers
 
     def _read_information_from_automation(self):
         if self._instance_dictionary is None:
@@ -319,7 +305,6 @@ class AutomationBase:
                 )
             )
         try:
-            print("Hallo")
             self._connector.load_automation(my_automation_file)
             self._instance_dictionary = self._connector.get_instance_dictionary()
         except CCAN_Error as ex:

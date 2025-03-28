@@ -951,6 +951,14 @@ class ResolvedConnection(ResolvedParameterBase):
     def get_pin_name(self):
         return self.__pin_name
 
+    def __eq__(self,other):
+        if not isinstance(other, ResolvedConnection):
+            return TypeError
+        if self.__app_id == other.__app_id and self.__pin_id == other.__pin_id and self.__driver_id == other.__driver_id:
+             return True
+        return False
+
+
     def get_pin_id(self):
         return self.__pin_id
 

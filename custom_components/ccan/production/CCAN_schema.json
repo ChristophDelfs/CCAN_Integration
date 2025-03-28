@@ -72,7 +72,10 @@
           "PASSWORD" : {
             "type" : "string"
           },
-          "TEMPORARY_AUTOMATION_FILE" : {
+          "SERVER_DIRECTORY": {
+            "type" : "string"
+          },
+          "HOST_TEMPORARY_AUTOMATION_FILE" : {
             "type" : "string"
           }
         },

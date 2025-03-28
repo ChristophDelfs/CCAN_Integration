@@ -10,11 +10,12 @@ class CCAN_ErrorCode(Enum):
 
     FILE_NOT_FOUND = 8
     FILE_INVALID = 9
-    TARGET_UP_TO_DATE = 10
-    FLASH_ERASE_FAILURE = 11
-    UPDATE_FAILURE = (12,)
+    DIRECTORY_INVALID =10
+    TARGET_UP_TO_DATE = 11
+    FLASH_ERASE_FAILURE = 12
+    UPDATE_FAILURE = (13,)
 
-    PROTOCOL_EVENT_INVALID = (13,)
+    PROTOCOL_EVENT_INVALID = (14,)
 
     ILLEGAL_EXPANDER_TYPE = 15
     EXPANDER_INITIALIZATION_FAILED = 16
@@ -62,6 +63,7 @@ class CCAN_Error(BaseException):
 
     __codes[CCAN_ErrorCode.FILE_NOT_FOUND] = "File not found"
     __codes[CCAN_ErrorCode.FILE_INVALID] = "File is invalid"
+    __codes[CCAN_ErrorCode.DIRECTORY_INVALID] = "Directory is invalid"
     __codes[CCAN_ErrorCode.TARGET_UP_TO_DATE] = (
         "Download is not needed. Target is already up to date"
     )
