@@ -71,7 +71,7 @@ class AutomationBase:
 
         automation_available = True
         if self._mode == "MIN":
-            if self._automation_file is not False:
+            if self._automation_file is not None:
                 self.load_automation_data(self._automation_file)
                 self.get_configuration_from_network()
             else:
@@ -85,11 +85,11 @@ class AutomationBase:
 
         elif self._mode == "MAX":
             if self._automation_file is not False:
-                self.load_automation_data(self._automation_file)
+                self.load_automation_data(self._automation_file, enforce_local_loading = True)
                 self.load_controller_data_from_network()
             else:
                 self.load_controller_data_from_network()
-                automation_available = self.scan_for_automation()
+                automation_available = self.scan_for_automation(enforce_local_loading=True)
         else:
             raise ValueError  # shall never happen
 
@@ -140,7 +140,7 @@ class AutomationBase:
                 2
             ]
 
-    def scan_for_automation(self):
+    def scan_for_automation(self, enforce_local_loading = False):
         # if no automation has been provided, search for it:
         if self._instance_dictionary is None:
             try:
@@ -165,7 +165,7 @@ class AutomationBase:
                     filenames, self._platform_configuration["CONFIGURATION_PATH"]
                 )
 
-                self._connector.load_automation(base_config_file)
+                self._connector.load_automation(base_config_file, enforce_local_loading)
                 self._automation_file = base_config_file
                 self._instance_dictionary = self._connector.get_instance_dictionary()
 
@@ -248,7 +248,7 @@ class AutomationBase:
                         connection_type = "ETHERNET"
                     if (
                         communication_driver.get_type() == "CAN_DRIVER"
-                        and connection_type == None
+                        and connection_type is None
                     ):
                         connection_type = "CAN"
                 if connection_type == "ETHERNET":
@@ -279,7 +279,7 @@ class AutomationBase:
                 self._automation_version = self._instance_dictionary["version"]
                 pass
 
-    def load_automation_data(self, my_automation_file):
+    def load_automation_data(self, my_automation_file, enforce_local_loading = False):
         if my_automation_file is False:
             try:
                 result = BroadcastConfigurationInformation(
@@ -305,8 +305,9 @@ class AutomationBase:
                 )
             )
         try:
-            self._connector.load_automation(my_automation_file)
+            self._connector.load_automation(my_automation_file, enforce_local_loading)
             self._instance_dictionary = self._connector.get_instance_dictionary()
+            self._automation_file = my_automation_file
         except CCAN_Error as ex:
             Report.print(ReportLevel.ERROR, str(ex))
             self._instance_dictionary = None

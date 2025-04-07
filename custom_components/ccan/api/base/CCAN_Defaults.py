@@ -26,7 +26,7 @@ class CCAN_Defaults:
         try:
             return my_config_file + "_" + my_controller_name + "_ENGINE_CONFIG.bin"
         except TypeError:
-            print("Gotcha!")
+            print(f"{my_config_file}  - {my_controller_name} TypeError Gotcha!")
 
     def get_map(self, my_key):
         if self.__init == False:

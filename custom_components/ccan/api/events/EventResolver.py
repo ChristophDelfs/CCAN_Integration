@@ -577,9 +577,9 @@ class EventResolver:
             )
         )
         ds1820_parameters2 = ParamListInfo(
-            parameter_name_list=["ROM_CODES"],
-            parameter_type_list=["UINT64"],
-            dimension_list=["Vector"],
+            parameter_name_list=["ROM_CODES","POWER_SUPPLY_TYPE"],
+            parameter_type_list=["UINT64","UINT8"],
+            dimension_list=["Vector","Scalar"],
         )
         new_app_event_list.append(
             EventDescriptor(

@@ -2345,10 +2345,6 @@ class Resolver:
         connections,
         location_info,
     ):
-        resolved_connection_set = []
-
-        controller_name = None
-
 
         offered_connection_dictionary = self.resolver_store.get_description_dictionary(offered_connection_type_for_item)
      
@@ -2356,6 +2352,9 @@ class Resolver:
             raise ResolverError(location_info,"Too many connections provided.")
         if len (connections) == 0:
             raise ResolverError(location_info,"Connection information is empty..?")
+
+
+        # 1. Auflösen Name und Trennen..
 
         # just check the first connection:
         if isinstance(connections[0], ParsedSymbol):
@@ -2384,7 +2383,8 @@ class Resolver:
 
         ################
 
-        # find board:
+        # 2. Board anhand der ersten Info finden:
+        # Wenn kein Board angegeben ist
         try:
             app_instance = self.resolver_store.get_instance_by_name("APP",board_name)           
         except KeyError:

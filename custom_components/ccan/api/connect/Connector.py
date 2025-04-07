@@ -140,9 +140,24 @@ class Connector:
     def run_on_updated_automation(self, my_hook):
         self._update_hooks.append(my_hook)
 
-    def load_automation(self, my_automation_file):
+    def load_automation(self, my_automation_file, enforce_local_loading = False):
         self._filename = my_automation_file
         self._init = False
+        self.is_automation_read_from_ftp_server = False
+
+        # attempt first via 
+        if self._ftp_services is not None and not enforce_local_loading:
+            try:
+                self._read_from_ftp_server(self._filename)
+                self.is_automation_read_from_ftp_server = True
+                self._init = True
+                Report.print(
+                    ReportLevel.WARN,
+                    f"loaded automation {self._filename} from ftp server\n",
+                )
+            except Exception as err:
+                pass
+
         if self._filename is not None:
             try:
                 if os.sep not in self._filename:
@@ -152,33 +167,28 @@ class Connector:
                         True,
                     )
                     self._filename = filename[:-4]
-
                 self._read_from_file(f"{self._filename}.pkl")
-                self.is_automation_read_from_ftp_server = False
+              
                 Report.print(
                     ReportLevel.WARN, "loaded automation " + self._filename + "\n"
                 )
                 self._init = True
             except FileNotFoundError as err:
-                if self._ftp_services is not None:
-                    try:
-                        self._read_from_ftp_server(self._filename)
-                        self.is_automation_read_from_ftp_server = True
-                        self._init = True
-                        Report.print(
-                            ReportLevel.WARN,
-                            f"loaded automation {self._filename} from ftp server\n",
-                        )
-                    except Exception as err:
-                        pass
-
-            if not self._init:
                 raise CCAN_Error(
                     CCAN_ErrorCode.FILE_NOT_FOUND,
                     "Provided configuration file "
                     + my_automation_file
-                    + " could not be found. Typo in the file name?\n",
-                )
+                    + " could not be found. Typo in the file name?\n",)
+            return
+      
+
+        if not self._init:
+            raise CCAN_Error(
+                CCAN_ErrorCode.FILE_NOT_FOUND,
+                "Provided configuration file "
+                + my_automation_file
+                + " could not be found. Typo in the file name?\n",
+            )
 
         if not self._init:
             raise CCAN_Error(
@@ -449,7 +459,7 @@ class Connector:
                     pkl_invalid = True
                 if index == 1 and pkl_invalid:
                     pkl_filename = received_event.get_parameter_values()[0]
-                    self.load_automation(pkl_filename[1:-1])
+                    self.load_automation(pkl_filename[1:-1],False) # load from ftp server with priority
                     pkl_invalid = False
 
                     # run registered hooks:

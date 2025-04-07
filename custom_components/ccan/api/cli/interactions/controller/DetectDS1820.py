@@ -32,7 +32,8 @@ class DetectDS1820(Interaction):
             raise  CCAN_Error(CCAN_ErrorCode.DS1820_PIN_NOT_AVAILABLE)
 
         # evaluate answer:
-        self._detected_sensors = my_received_event.get_parameters().get_values()[0]
+        self._detected_sensors      = my_received_event.get_parameters().get_values()[0]
+        self._detected_power_supply = my_received_event.get_parameters().get_values()[1]
 
         return True
 
@@ -64,4 +65,13 @@ class DetectDS1820(Interaction):
                     
                 Report.print(ReportLevel.VERBOSE,"# "+ str(i) + ":  Typ " + type_info + " with ROM Address " +  hex_value + "\n")
      
-        return self._detected_sensors
+        if self._detected_power_supply == 0:
+            power_supply_type = " parasite"
+        elif self._detected_power_supply == 1:
+            power_supply_type = " dedicated"
+        else:
+            power_supply_type = "n unknown"
+
+        Report.print(ReportLevel.VERBOSE,f"Sensor{"s are" if number_of_detected_devices> 1 else " is"} powered by a{power_supply_type} power_supply.\n")
+
+        return self._detected_sensors, self._detected_power_supply

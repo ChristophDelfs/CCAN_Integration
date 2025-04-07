@@ -652,14 +652,14 @@ class TransformingParser(Transformer):
         communication_usage_list = matches[3+count]
         adapter_usage_list       = matches[4+count]
 
-        if sensor_usage_list[0] == None:
-            sensor_usage_list = []      
+        #if sensor_usage_list[0] == None:
+        #    sensor_usage_list = []      
 
-        if adapter_usage_list[0] == None:
-            adapter_usage_list = []      
+        #if adapter_usage_list[0] == None:
+        #    adapter_usage_list = []      
 
-        if communication_usage_list[0] == None:
-            communication_usage_list = []
+        #if communication_usage_list[0] == None:
+        #    communication_usage_list = []
 
 
         return ParsedControllerInstance(type                   = expander_type, 
@@ -680,10 +680,7 @@ class TransformingParser(Transformer):
         parameter_list = matches[1][1]
         connected_to   = matches[2]        
         sensor_usage_list = matches[3]
-
-        if sensor_usage_list[0] == None:
-            pass
-        
+              
         return ParsedAppInstance(type           = expander_type, 
 
                                       name           = instance_name, 
@@ -808,10 +805,12 @@ class TransformingParser(Transformer):
         return(str(name),parameter_list)
 
     def communication_pin_list(self,*communication_pin_list):
+        if communication_pin_list[0] is None:
+            return []
         return communication_pin_list 
   
     def connection_pin_list(self,*connection_pin_list):
-        if connection_pin_list[0] == None:
+        if connection_pin_list[0] is None:
             return []
         return connection_pin_list 
  
@@ -824,16 +823,20 @@ class TransformingParser(Transformer):
 
     def pin_list_description(self,*pin_description): 
         result = pin_description
-        if pin_description[0] == None:
+        if pin_description[0] is None:
             result = []
             
         return ParsedPinList(list = result)
 
     def communication_driver_list(self,*pin_description):
+        if pin_description[0] is None:
+            pin_description = []
         return ParsedCommunicationList(list = pin_description)
         
 
     def adapter_list_description(self,*pin_description): 
+        if pin_description[0] is None:
+            pin_description = []
         return ParsedAdapterList(list = pin_description)
 
     @v_args(meta=True)
@@ -886,9 +889,13 @@ class TransformingParser(Transformer):
         return driver_name_list
 
     def adapter_list(self,*adapter_list):
+        if adapter_list[0] is None:
+            return []
         return adapter_list
 
-    def usage_pin_list(self,*usage_pin_list):
+    def usage_pin_list(self,*usage_pin_list):    
+        if usage_pin_list[0] is None:  
+            return []
         return usage_pin_list
 
     @v_args(meta=True)
@@ -914,6 +921,8 @@ class TransformingParser(Transformer):
         return pin_entry
 
     def usage_pin_entry_list(self,*entry_list):
+        if entry_list[0] is None:
+            return []
         return list(entry_list)
 
     @v_args(meta=True)
@@ -948,6 +957,8 @@ class TransformingParser(Transformer):
 
 
     def transport_adapter_instance_list(self,*instances):
+        if instances[0] is None:
+            return []
         return instances
     #:    ( "TRANSPORT_ADAPTER" "{" [ transport_adapter_instance ("," transport_adapter_instance)*] "}" )
     
@@ -957,7 +968,7 @@ class TransformingParser(Transformer):
         location_info = LocationInfo(file = self.__current_file,line = meta.line, column = meta.column)
           
         instance_with_param = matches[0]
-        if matches[1] != None:
+        if matches[1] is not None:
             connected_to_name  = matches[1].name
         else:
             connected_to_name = None
@@ -1036,7 +1047,7 @@ class TransformingParser(Transformer):
         return code_list
 
     def degradation_code_list(self,*code_list_tuple):
-        if code_list_tuple[0] == None:
+        if code_list_tuple[0] is None:
             return []
         code_list = list(code_list_tuple)
         return code_list

@@ -32,6 +32,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     UnitOfTemperature,
+    UnitOfElectricPotential,
 )
 
 
@@ -53,24 +54,34 @@ async def async_setup_entry(
     """Set up the Sensors"""
     coordinator: CCAN_Coordinator = hass.data[DOMAIN][config_entry.entry_id].coordinator
 
-    sensors: list[CCAN_Sensor] = [
-        CCAN_Sensor(coordinator, device)
+    temperature_sensors: list[CCAN_Temperature_Sensor] = [
+        CCAN_Temperature_Sensor(coordinator, device)
         for device in coordinator.ha_library.get_devices("HA_TEMPERATURE_SENSOR")
     ]
 
-    if len(sensors) > 0:
+    if len(temperature_sensors) > 0:
         coordinator.initialize_count += 1
 
-    # Add Sensors to HA:
-    async_add_entities(sensors)
-    _LOGGER.info("Added %d sensors", len(sensors))
+        # Add Sensors to HA:
+        async_add_entities(temperature_sensors)
+        _LOGGER.info("Added %d temperature sensors", len(temperature_sensors))
+
+    voltage_sensors: list[CCAN_Voltage_Sensor] = [
+        CCAN_Voltage_Sensor(coordinator, device)
+        for device in coordinator.ha_library.get_devices("HA_VOLTAGE_SENSOR")
+    ]
+
+    if len(voltage_sensors) > 0:
+        coordinator.initialize_count += 1
+
+        # Add Sensors to HA:
+        async_add_entities(voltage_sensors)
+        _LOGGER.info("Added %d voltage sensors", len(voltage_sensors))
 
 
 class CCAN_Sensor(CoordinatorEntity, SensorEntity):
     """CCAN sensor entity."""
 
-    _attr_native_unit_of_measurement = (UnitOfTemperature.CELSIUS,)
-    _attr_device_class = (SensorDeviceClass.TEMPERATURE,)
     _attr_state_class = (SensorStateClass.MEASUREMENT,)
 
     def __init__(
@@ -80,24 +91,9 @@ class CCAN_Sensor(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         self.ha_library = coordinator.ha_library
         self.device = device
-        self._temperature = None
-
-        self._name = self.ha_library.get_device_parameter_value(device, "name")
-
-        events = self.ha_library.get_symbolic_event(self.device, "CURRENT_TEMPERATURE")
-        for event in events:
-            self.coordinator.add_listening_event(event, self.update)
-
-        self.coordinator.register_entity(self)
-
-    def update(self, value):
-        if value > -100 and value < 100:
-            self._temperature = value
-            print("new temperature received:", value)
-            self.schedule_update_ha_state()
-
-    def get_variables(self):
-        return [("TEMPERATURE", self.update)]
+        self._value = None
+        self._model = "unknown model"
+        self._manufacturer = "unknown manufacturer"
 
     @property
     def unique_id(self) -> str:
@@ -112,18 +108,18 @@ class CCAN_Sensor(CoordinatorEntity, SensorEntity):
 
     @property
     def initialized(self):
-        return self._temperature is not None
+        return self._value is not None
 
     @property
     def available(self):
-        return self._temperature is not None
+        return self._value is not None
 
     @property
     def native_value(self) -> int | float:
         """Return the state of the entity."""
         # Using native value and native unit of measurement, allows you to change units
         # in Lovelace and HA will automatically calculate the correct value.
-        return self._temperature
+        return self._value
 
     @property
     def device_info(self) -> DeviceInfo:
@@ -134,8 +130,8 @@ class CCAN_Sensor(CoordinatorEntity, SensorEntity):
 
         return DeviceInfo(
             name=self._name,
-            manufacturer="Dallas",
-            model="DS18B20",
+            manufacturer=self._manufacturer,
+            model=self._model,
             sw_version="1.0",
             identifiers={
                 (
@@ -147,3 +143,63 @@ class CCAN_Sensor(CoordinatorEntity, SensorEntity):
                 self.device, "suggested_area"
             ),
         )
+
+
+class CCAN_Temperature_Sensor(CCAN_Sensor):
+    """CCAN sensor entity."""
+
+    _attr_native_unit_of_measurement = (UnitOfTemperature.CELSIUS,)
+    _attr_device_class = (SensorDeviceClass.TEMPERATURE,)
+
+    def __init__(
+        self, coordinator: CCAN_Coordinator, device: ResolvedHomeAssistantDeviceInstance
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, device)
+
+        self._name = self.ha_library.get_device_parameter_value(device, "name")
+
+        events = self.ha_library.get_symbolic_event(self.device, "CURRENT_TEMPERATURE")
+        for event in events:
+            self.coordinator.add_listening_event(event, self.update)
+
+        self.coordinator.register_entity(self)
+
+    def update(self, value):
+        if value > -100 and value < 100:
+            self._value = value
+            print("new temperature received:", value)
+            self.schedule_update_ha_state()
+
+    def get_variables(self):
+        return [("TEMPERATURE", self.update)]
+
+
+class CCAN_Voltage_Sensor(CCAN_Sensor):
+    """CCAN sensor entity."""
+
+    _attr_native_unit_of_measurement = (UnitOfElectricPotential.VOLT,)
+    _attr_device_class = (SensorDeviceClass.VOLTAGE,)
+
+    def __init__(
+        self, coordinator: CCAN_Coordinator, device: ResolvedHomeAssistantDeviceInstance
+    ) -> None:
+        """Initialize the sensor."""
+        super().__init__(coordinator, device)
+
+        self._name = self.ha_library.get_device_parameter_value(device, "name")
+
+        events = self.ha_library.get_symbolic_event(self.device, "CURRENT_VOLTAGE")
+        for event in events:
+            self.coordinator.add_listening_event(event, self.update)
+
+        self.coordinator.register_entity(self)
+
+    def update(self, value):
+        if value > -100 and value < 100:
+            self._value = value
+            print("new voltage received:", value)
+            self.schedule_update_ha_state()
+
+    def get_variables(self):
+        return [("VOLTAGE", self.update)]
