@@ -61,6 +61,7 @@ class CoverState(Enum):
 class CCAN_Cover(CoverEntity):
     """Entity that controls a CCAN cover."""
 
+    # _attr_has_entity_name = True
     _attr_device_class = CoverDeviceClass.SHUTTER
     _attr_supported_features: CoverEntityFeature = (
         CoverEntityFeature.OPEN
@@ -80,8 +81,15 @@ class CCAN_Cover(CoverEntity):
         self.coordinator = coordinator
         self.ha_library = coordinator.ha_library
         self.device = device
+        self._entity_id = "cover." + self.device.get_name()
 
         self._name = self.ha_library.get_device_parameter_value(device, "name")
+        self._location = self.ha_library.get_device_parameter_value(
+            self.device, "suggested_area"
+        )
+        self._entity_id = coordinator.create_entity_name(
+            "cover", self._location, self._name
+        )
 
         self.coordinator.add_listening_events(
             self.ha_library.get_symbolic_event(self.device, "OPENING"), self.set_opening
@@ -111,12 +119,21 @@ class CCAN_Cover(CoverEntity):
         )
         self.coordinator.register_entity(self)
 
+    @property
+    def entity_id(self) -> str:
+        """Return the display name of this light."""
+        return self._entity_id
+
+    @entity_id.setter
+    def entity_id(self, new_entity_id):
+        self._entity_id = new_entity_id
+
     def get_variables(self):
         return [("POSITION", self.set_initial_cover_position)]
 
-    @property
-    def has_entity_name(self) -> bool:
-        return True
+    # @property
+    # def has_entity_name(self) -> bool:
+    #    return True
 
     @property
     def device_info(self) -> DeviceInfo:

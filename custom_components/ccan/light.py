@@ -107,8 +107,26 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
         self.device = device
 
         self._name = self.ha_library.get_device_parameter_value(device, "name")
+        self._location = self.ha_library.get_device_parameter_value(
+            self.device, "suggested_area"
+        )
+        self._entity_id = coordinator.create_entity_name(
+            "light", self._location, self._name
+        )
         self._brightness = None
         self._state = None
+
+        # coordinator.create_default_entity_id(
+        # "light",
+        # self.ha_library.get_device_parameter_value(self.device, "suggested_area"),
+        # self._name,
+        # )
+
+        # self._attr_entity_id = (
+        #    self.ha_library.get_device_parameter_value(self.device, "suggested_area")
+        #    + "."
+        #    + self._name
+        # )
 
         events = self.ha_library.get_symbolic_event(self.device, "ON")
         for event in events:
@@ -153,9 +171,7 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
                     f"{self.device.get_name()}",
                 )
             },
-            suggested_area=self.ha_library.get_device_parameter_value(
-                self.device, "suggested_area"
-            ),
+            suggested_area=self._location,
         )
 
     # @property
@@ -166,6 +182,15 @@ class CCAN_Light(CoordinatorEntity, LightEntity):
     def name(self) -> str:
         """Return the display name of this light."""
         return self._name
+
+    @property
+    def entity_id(self) -> str:
+        """Return the display name of this light."""
+        return self._entity_id
+
+    @entity_id.setter
+    def entity_id(self, new_entity_id):
+        self._entity_id = new_entity_id
 
     # @property
     # def brightness(self):

@@ -250,6 +250,24 @@ class CCAN_Coordinator(DataUpdateCoordinator):
 
         self.initialized = True
 
+    def create_entity_name(self, domain, location, name):
+        entity_id = domain + "." + location.lstrip("_") + "_" + name
+
+        tpl: tuple = (
+            ("ü", "ue"),
+            ("Ü", "Ue"),
+            ("ä", "ae"),
+            ("Ä", "Ae"),
+            ("ö", "oe"),
+            ("Ö", "Oe"),
+            ("ß", "ss"),
+            (" ", "_"),
+        )
+
+        for item1, item2 in tpl:
+            entity_id = entity_id.replace(item1, item2)
+        return entity_id
+
     def update_automation_information(self):
         # string representation:
         time1 = datetime.now()

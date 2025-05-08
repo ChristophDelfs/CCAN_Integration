@@ -117,7 +117,7 @@ class CCAN_Error(BaseException):
 
     __codes[CCAN_ErrorCode.ILLEGAL_DEVICE] = "Device is not defined."
 
-    __codes[CCAN_ErrorCode.SERVICE_NOT_SUPPORTED] = "Service not supported"
+    __codes[CCAN_ErrorCode.SERVICE_NOT_SUPPORTED] = "Service not available for this board"
 
     __codes[CCAN_ErrorCode.DEGRADATION_STATUS_NOT_RESOLVABLE] = (
         "Internal error: could not interpret controller feedback"

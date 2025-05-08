@@ -41,6 +41,7 @@ from api.cli.interactions.controller.DS1820ReadMeasurement import DS1820ReadMeas
 from api.cli.interactions.controller.GetEngineThreadFailures import GetEngineThreadFailures
 from api.cli.interactions.controller.UpTime import UpTime
 from api.cli.interactions.controller.DebugEvenTestt import DebugEventTest
+from api.cli.interactions.controller.TimeInfo import TimeInfo
 
 # broadcast interactions:
 from api.cli.interactions.broadcast.BroadcastPing import BroadcastPing
@@ -231,6 +232,7 @@ class CLI():
         group.add_argument("-i","--sw_id",help="get info whether controller runs 'Bootloader' or 'Firmware'", action="store_const", const = "sw_id")
         group.add_argument("-v","--version",help="get version of running SW and used configuration",action="store_const", const = "version")
         group.add_argument("-m","--memory", help="get the used and free RAM space on device",action="store_const", const = "memory")
+        group.add_argument("-t","--time", help="get the current date and time",action="store_const", const = "time")
         group.add_argument("--load", help="provide processor usage and idle information",action="store_const", const = "load")
         group.add_argument("--enable_verbose_events",help="controller engine sets event verbosity. All events are shipped.",action="store_const", const = "enable_verbose_events")
         group.add_argument("--disable_verbose_events",help="controller engine sets event verbosity. Only necessary events are shipped (default).",action="store_const", const = "disable_verbose_events")
@@ -462,6 +464,7 @@ class CLI():
             "version"               : { "automation": AutomationVersion, "broadcast": BroadcastVersion, "controller": Version, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },            
             "load"                :   { "automation": AutomationProcessorLoad, "broadcast": BroadcastProcessorLoad, "controller": ProcessorLoad, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },   
             "memory"                : { "automation": AutomationMemory, "broadcast": BroadcastMemory, "controller": Memory, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },    
+            "time"                :   { "automation": TimeInfo, "broadcast": TimeInfo, "controller": TimeInfo, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },    
             "enable_verbose_events" : { "automation": AutomationEnableVerboseEvents, "broadcast": BroadcastEnableVerboseEvents, "controller": EnableVerboseEvents, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },    
             "disable_verbose_events": { "automation": AutomationDisableVerboseEvents, "broadcast": BroadcastDisableVerboseEvents, "controller": DisableVerboseEvents, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },    
             "enable_application_events_only" : { "automation": AutomationEnableVerboseEvents, "broadcast": BroadcastEnableApplicationEventsOnly, "controller": EnableApplicationEventsOnly, "parameter": [1] , "ReportLevel": ReportLevel.VERBOSE },    

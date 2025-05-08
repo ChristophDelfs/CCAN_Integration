@@ -393,6 +393,9 @@ class ControllerStore ():
                     if len(target_events) == 0:
                         target_events =  [ None ]
                     
+                    #if sorted_source_event.get_full_name() == 'ReedKontakt.ReedContact::PRESSED':
+                    #    pass  # ReedKontakt.ReedContact::PRESSED
+
                     for target_event in target_events:
                     
                         try:
@@ -405,9 +408,7 @@ class ControllerStore ():
                             target_controller = None
                         except AttributeError:
                             target_controller = None
-                          
-  
-                       
+                                                                         
                         # external protocol events 
                         if source_controller is None:
                             source_controller = target_controller

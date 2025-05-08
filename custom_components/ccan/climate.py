@@ -110,8 +110,12 @@ class CCAN_Climate(ClimateEntity):
         self.device = device
 
         self._name = self.ha_library.get_device_parameter_value(device, "name")
-
-        self._attr_entity_id = device.get_name()
+        self._location = self.ha_library.get_device_parameter_value(
+            self.device, "suggested_area"
+        )
+        self._entity_id = coordinator.create_entity_name(
+            "climate", self._location, self._name
+        )
 
         # internal states:
         self._heating_control_on = None

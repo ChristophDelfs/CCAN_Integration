@@ -187,7 +187,22 @@ class EventResolver:
             dimension_list=["Scalar"],
         )
         new_app_event_list.append(
+
             EventDescriptor(name="UPTIME_REPLY", id=15, parameters=uptime_parameters)
+        )
+
+        new_app_event_list.append(
+            EventDescriptor(name="TIME_REQUEST", id=16, parameters=None)
+        )
+       
+        time_parameters = ParamListInfo(
+            parameter_name_list=["seconds"],
+            parameter_type_list=["UINT64"],
+            dimension_list=["Scalar"],
+        )
+
+        new_app_event_list.append(
+            EventDescriptor(name="TIME_REPLY", id=17, parameters=time_parameters)
         )
 
         new_app_event_list.append(

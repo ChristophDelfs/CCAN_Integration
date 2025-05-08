@@ -72,6 +72,6 @@ class DetectDS1820(Interaction):
         else:
             power_supply_type = "n unknown"
 
-        Report.print(ReportLevel.VERBOSE,f"Sensor{"s are" if number_of_detected_devices> 1 else " is"} powered by a{power_supply_type} power_supply.\n")
+        Report.print(ReportLevel.VERBOSE,f'Sensor{"s are" if number_of_detected_devices> 1 else " is"} powered by a{power_supply_type} power_supply.\n')
 
         return self._detected_sensors, self._detected_power_supply

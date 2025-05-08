@@ -94,6 +94,13 @@ class CCAN_Sensor(CoordinatorEntity, SensorEntity):
         self._value = None
         self._model = "unknown model"
         self._manufacturer = "unknown manufacturer"
+        self._name = self.ha_library.get_device_parameter_value(device, "name")
+        self._location = self.ha_library.get_device_parameter_value(
+            self.device, "suggested_area"
+        )
+        self._entity_id = coordinator.create_entity_name(
+            "sensor", self._location, self._name
+        )
 
     @property
     def unique_id(self) -> str:
@@ -101,6 +108,15 @@ class CCAN_Sensor(CoordinatorEntity, SensorEntity):
         # All entities must have a unique id.  Think carefully what you want this to be as
         # changing it later will cause HA to create new entities.
         return f"{DOMAIN}-{self.device.get_name()}"
+
+    @property
+    def entity_id(self) -> str:
+        """Return the display name of this light."""
+        return self._entity_id
+
+    @entity_id.setter
+    def entity_id(self, new_entity_id):
+        self._entity_id = new_entity_id
 
     @property
     def name(self):
@@ -157,7 +173,12 @@ class CCAN_Temperature_Sensor(CCAN_Sensor):
         """Initialize the sensor."""
         super().__init__(coordinator, device)
 
-        self._name = self.ha_library.get_device_parameter_value(device, "name")
+        self._location = self.ha_library.get_device_parameter_value(
+            self.device, "suggested_area"
+        )
+        self._entity_id = coordinator.create_entity_name(
+            "sensor", self._location, self._name
+        )
 
         events = self.ha_library.get_symbolic_event(self.device, "CURRENT_TEMPERATURE")
         for event in events:
@@ -186,8 +207,6 @@ class CCAN_Voltage_Sensor(CCAN_Sensor):
     ) -> None:
         """Initialize the sensor."""
         super().__init__(coordinator, device)
-
-        self._name = self.ha_library.get_device_parameter_value(device, "name")
 
         events = self.ha_library.get_symbolic_event(self.device, "CURRENT_VOLTAGE")
         for event in events:
