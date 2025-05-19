@@ -2,7 +2,7 @@ from api.cli.interactions.Interaction import Interaction
 from api.base.Report import Report, ReportLevel
 from api.base.CCAN_Error import CCAN_Error, CCAN_ErrorCode
 
-from datetime import datetime
+from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
 
 
@@ -34,7 +34,8 @@ class TimeInfo(Interaction):
         return
 
     def on_loop_end(self):        
-        date = datetime.fromtimestamp(self.__time, ZoneInfo("Europe/Berlin"))        
+        # controller time is (!) local time. to be interpreted as UTC, otherwise Python will "correct" it.
+        date = datetime.fromtimestamp(self.__time, timezone.utc)
         Report.print(ReportLevel.VERBOSE,f"Controller time is {date} \n")
 
         return self.__time

@@ -155,6 +155,7 @@ class Connector:
                     ReportLevel.WARN,
                     f"loaded automation {self._filename} from ftp server\n",
                 )
+                return
             except Exception as err:
                 pass
 
