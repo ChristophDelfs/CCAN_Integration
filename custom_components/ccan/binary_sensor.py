@@ -51,18 +51,27 @@ async def async_setup_entry(
         for device in coordinator.ha_library.get_devices("HA_BINARY_SENSOR_WINDOW")
     ]
 
+    door_sensors: list[CCAN_DoorSensor] = [
+        CCAN_DoorSensor(coordinator, device)
+        for device in coordinator.ha_library.get_devices("HA_BINARY_SENSOR_DOOR")
+    ]
+
     if len(window_sensors) > 0:
+        coordinator.initialize_count += 1
+
+    if len(door_sensors) > 0:
         coordinator.initialize_count += 1
 
     # Add Lights to HA:
     async_add_entities(window_sensors)
     _LOGGER.info("Added %d window sensors", len(window_sensors))
 
+    async_add_entities(door_sensors)
+    _LOGGER.info("Added %d door sensors", len(door_sensors))
 
-class CCAN_WindowSensor(BinarySensorEntity):
+
+class CCAN_BinarySensorEntity(BinarySensorEntity):
     """Represent a block binary sensor entity."""
-
-    _attr_device_class = BinarySensorDeviceClass.WINDOW
 
     def __init__(
         self,
@@ -145,4 +154,15 @@ class CCAN_WindowSensor(BinarySensorEntity):
 
     def set_window_open(self, **kwargs: Any) -> None:
         self.set_window_state(False)
-        
+
+
+class CCAN_WindowSensor(CCAN_BinarySensorEntity):
+    """Represent a window binary sensor entity."""
+
+    _attr_device_class = BinarySensorDeviceClass.WINDOW
+
+
+class CCAN_DoorSensor(CCAN_BinarySensorEntity):
+    """Represent a door binary sensor entity."""
+
+    _attr_device_class = BinarySensorDeviceClass.DOOR

@@ -35,6 +35,6 @@ class DS1820ReadMeasurement(Interaction):
     def on_iteration_end(self):
         return
 
-    def on_loop_end(self):    
-        Report.print(ReportLevel.VERBOSE,f"Measured temperature {self._temperature}.\nScratch pad content is {self._scratch_pad}.\n")          
+    def on_loop_end(self):           
+        Report.print(ReportLevel.VERBOSE,f"Measured temperature is {self._temperature if self._temperature != 85 and self._temperature < 4095 else "invalid"}.\nScratch pad content is {self._scratch_pad}.\n")          
         return True

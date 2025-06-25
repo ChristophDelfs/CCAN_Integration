@@ -19,10 +19,6 @@ from api.resolver.Definitions import ParsedVariableInstance,ParsedTemplateVariab
 from api.resolver.Definitions import ParsedEquivalent, ParsedHADeviceInstance, ParsedVariableName, ParsedConstraints
                  
 
-
-from api.resolver.ResolverElements import EventVariable, SerializedFunctionExpression, FunctionExpression, Function
-from api.resolver.Definitions import OperatorTypeKey,Operator, ParsedSymbol, ElementTypeKey, OperandTypeKey
-
 # https://lark-parser.readthedocs.io/en/latest/classes/
 # https://github.com/lark-parser/lark/blob/master/lark/grammars/common.lark
 # https://dexterritory.online/posts/parsing-context-free-grammars-using-lark 
@@ -39,223 +35,198 @@ class TransformingParser(Transformer):
         self.__parse_tree = None
         self.__current_tree = None
         self.__current_file = None
-        self.__parser = lark.Lark('''start:(sensor_drivers| communication_drivers | protocol_types | transport_adapter_types | ha_device_description | device_description| controller_description | app_description | template_description | automation | include)+
-
-    include :                    ( ("INCLUDE"|"include") "{" PATHNAME "}") 
-
-    sensor_drivers :             ("SENSOR_DRIVERS"   "{" driver_description_list "}")   
-    communication_drivers:       ("COMMUNICATION_DRIVERS"  "{" driver_description_list "}")  
-    transport_adapter_types :    ("TRANSPORT_ADAPTERS" "{" transport_adapter_description_list "}")    
+        self.__parser = lark.Lark('''start:(driver_description_type_list | protocol_types | device_description | board_description |  automation | include)+
  
-    template_description:        ("TEMPLATE" TYPE_NAME "(" param_def_list ")" "->"  "(" connection_pin_list ")" "{" event_description status_variables_description automation  "}") 
+            include :                    "INCLUDE" "{" NAME "}"
 
-    protocol_types:              ( "ADDITIONAL_PROTOCOLS"  protocol_type_list )
-    enable_protocol.2:             ("ENABLE" PROTOCOL_NAME "(" param_list ")" )
-
-    automation:                  ( "AUTOMATION"  "{" automation_rule_list "}" )
-    automation_rule_list:        ( [automation_rule (automation_rule)*])
-    automation_rule:             ( alias_definition | rule | export | controller_instance| app_instance| ha_device_instance | device_instance | template_variable_instance| variable_instance | enable_protocol)
-
-    controller_description:      ("CONTROLLER_TYPE" TYPE_NAME "(" param_def_list ")"  "{" pin_list_description communication_driver_list transport_adapter_list degradation_codes_description"}")
-    app_description :            ("APP"   TYPE_NAME "(" param_def_list ")" "->"  "(" connection_pin_list ")" "{" pin_list_description degradation_codes_description "}" )
-    device_description:          ("DEVICE_TYPE"     TYPE_NAME "(" param_def_list ")" "->"  "(" connection_pin_list ")" "{" [attributes] event_description status_variables_description degradation_codes_description "}")  
-    ha_device_description:       ("HOME_ASSISTANT_DEVICE_TYPE"   TYPE_NAME "(" param_def_list ")" "{"  event_description  status_variables_description "}" ) 
-
-    alias_definition:            (PARAM_NAME  "=" arg) 
-    rule:                         ( event ("triggers"|"TRIGGERS") event_list)
-    export:                       ("EXPORT" event_list)
+            driver_description_type_list:  ("SENSOR_DRIVERS"|"COMMUNICATION_DRIVERS"|"TRANSPORT_ADAPTERS") "{" driver_description_type* "}"
+            driver_description_type:         NAME driver_description ("," driver_description)*
+            driver_description:              NAME parameter_definition_list degradation_code_attribute_list [ connection_attribute ]
                                   
-    controller_instance:         ("CONTROLLER" TYPE_NAME instance_with_param                           "{" [uuid_identifier] usage_pin_list communication_pin_list transport_adapter_instance_list "}" )
-    app_instance:                ("APP"   TYPE_NAME instance_with_param  "->" "(" param_list  ")" "{" usage_pin_list "}")
-    device_instance.1:           ( TYPE instance_with_param "->" "(" param_list  ")")
-    ha_device_instance:           ( TYPE instance_with_param  equivalent_list )
-  
-    template_variable_instance.1:("VAR::" variable_name "=" arg ["->" "(" param_list  ")"])
-    variable_instance.2:         ("VAR::" NAME          "=" arg ["->" "(" param_list  ")"])
-  
-    instance_with_param:         (NAME "(" param_list ")")
-  
-    uuid_identifier:           ("UUID" "="  QUOTED_STRING)                                    
+            device_description:          ("DEVICE_TYPE"|"HA_DEVICE_TYPE"|"TEMPLATE") NAME parameter_definition attribute_definition_list
 
-    connection_pin_list :        ([connection_pin (connection_pin)*])
-    connection_pin:              (PARAM_NAME "<" DRIVER_TYPE ">")
+            board_description:           ("APP" NAME parameter_definition_list connection_instance "{" attribute_definition_list "}" )
 
- 
-    transport_adapter_description_list: ([transport_adapter_description (transport_adapter_description)*])
-    transport_adapter_description: (PROTOCOL_NAME DRIVER_NAME "(" param_def_list ")" degradation_codes_description  "->"  "(" connection_pin_list ")" ) 
+            parameter_definition_list:   "(" [ parameter_definition ] ("," parameter_definition)* ")"
+            parameter_definition:        NAME "<" NAME [ "["  constraint_list "]"  ] ">"   ["=" expression ] 
+                                  
+            constraint_list:             (constraint_as_bounds | constraint_as_list)           
+            constraint_as_bounds:        expression ".." expression
+            constraint_as_list:          expression ["," expression ]+
+                      
+            attribute_definition_list:    (attribute_definition+ | automation)
+            attribute_definition:         (pin_attribute_list | event_attribute_list | degradation_code_attribute_list | connection_attribute| home_assistant_mapping_attribute_list)                                  
+            pin_attribute_list:           "SENSOR_ACTOR_PINS" "{" pin_attribute* "}"                                 
+            pin_attribute:                NAME "SUPPORTS" "[" NAME ["," NAME]* "]"
+                                  
+            event_attribute_list:         ("INPUT_EVENTS"|"OUTPUT_EVENTS") "{" event_attribute* "}"
+            event_attribute:              NAME parameter_definition_list
+            
+            degradation_code_attribute_list: "DEGRADATION_CODES" "{" degradation_code_attribute* "}"
+            degradation_code_attribute:    NAME  QUOTED_STRING
 
-    transport_adapter_list:      ( "TRANSPORT_ADAPTER" ":" "[" DRIVER_NAME ("," DRIVER_NAME)* "]")
+            home_assistant_mapping_attribute_list: "{" home_assistant_mapping_attribute* "}"
+            home_assistant_mapping_attribute: NAME "=" parameter_list
 
-    transport_adapter_instance_list:    ( "TRANSPORT_ADAPTER" "{" [ transport_adapter_instance ( transport_adapter_instance)*] "}" )
-    transport_adapter_instance:  (instance_with_param "->" "(" [symbol]  ")")
+            connection_attribute:           "->" parameter_definition_list
+
+            protocol_types:              "ADDITIONAL_PROTOCOLS"  (protocol_type ("," protocol_type)*)
+            protocol_type:               NAME parameter_definition_list
+           
+            automation:                   "AUTOMATION" "{" ( board_instance | element_instance | variable | alias | event_rule | enable_protocol | export )* "}"
+                                       
+            element_instance:             NAME NAME parameter_list [connection_instance] [attribute_instances]
+            board_instance:               ("CONTROLLER" | "APP") NAME NAME parameter_list [ connection_instance ] attribute_instances 
+            
+            parameter_list:                "(" [parameter] ["," parameter]* ")"
+            parameter:                     [NAME "="] expression
+                                            
+            attribute_instances:           "{" general_attribute_instance+ "}" 
+
+            general_attribute_instance:     ( uuid | driver_usage|  pin_usage | transport_adapter_usage |  home_assistant_mapping_usage )
+            connection_instance:             "->" "(" expression ")"                                   
+            uuid:                            "UUID" "=" QUOTED_STRING
+            driver_usage:                    NAME  "{" pin_usage* "}"
+            transport_adapter_usage:         NAME  "{" transport_adapter* "}"
+            pin_usage:                       NAME "::"  (driver_list | driver) 
+            home_assistant_mapping_usage:    NAME "="  ( event_list | symbol )
+
+            driver_list:                     ( "[" driver ["," driver]* "]" )
+            driver:                          (NAME parameter_list "ALIAS" NAME)                        
+            transport_adapter:               NAME parameter_list connection_instance
+
+            variable:                        ("VAR::" NAME "=" expression connection_instance )
+            alias:                           ( NAME "=" expression)       
+           
+            event_rule:                      event ("triggers" | "TRIGGERS") event_list
+            event_list:                      event ("," event)*
+
+            event:                          (ccan_event| no_ccan_event) 
+            ccan_event:                     symbol parameter_list
+            no_ccan_event:                  NAME parameter_list "::"  NAME parameter_list
+           
+            enable_protocol:                ("ENABLE" NAME  parameter_list )
+            export:                         ("EXPORT" event_list)                                  
+                                                                                                      
+            ?expression: sum         -> argument
+                      | sum_str      -> string_argument
+
+            ?sum: product
+                | sum "+" product   -> add_func
+                | sum "-" product   -> sub_func
+                | sum "&" product   -> and_func
+                | sum "|" product   -> or_func
      
-    pin_list_description:         ( "SENSOR_PINS" "{" [pin_description (pin_description)*] "}") 
-    pin_description:              (PIN_NAME ":" hw_driver_list)
-    hw_driver_list:              ("[" [ DRIVER_NAME ("," DRIVER_NAME)*] "]")
+                ?product: atom
+                | product "*" atom  -> mul_func   
+                | product "/" atom  -> div_func
+                | product "^" atom  -> pow_func
+                | "(" sum ")"
 
-    communication_driver_list:   ( "COMMUNICATION_PINS" "{" [pin_description (pin_description)*] "}")
-    communication_pin_list:      ( "COMMUNICATION_PINS" "{" [usage_pin (usage_pin)*] "}")
-    
-    usage_pin_list:              ( "SENSOR_ACTOR_PINS" "{" [usage_pin (usage_pin)*] "}")
-    usage_pin:                   ( PIN_NAME"::" (usage_pin_entry | usage_pin_entry_list))
-    usage_pin_entry:             ( DRIVER_NAME "(" param_list ")" ["ALIAS" ALIAS_NAME])
-    usage_pin_entry_list:        ("[" [usage_pin_entry ("," usage_pin_entry)*] "]")
-
-
-
-    protocol_type_list:          (protocol_type ("," protocol_type)*)
-    protocol_type:               (PROTOCOL_NAME "(" param_def_list ")")  
+            ?atom: NUMBER               -> number            
+                | "-" atom             -> neg_func     
+                | "(" sum ")"                     
+                | regular_symbol               
+                | function
+                | HEX_NUMBER
+                | QUOTED_STRING
 
 
-    driver_description_list:     ([driver_description (driver_description)*])
-    driver_description:          (DRIVER_TYPE driver ("," driver )* )
-    driver:                      (DRIVER_NAME "(" param_def_list ")" degradation_codes_description) 
-    
-    ha_event_description:        (input_events output_events get_state_events)  
-    event_description:           (input_events output_events)    
-    input_events:                ("INPUT_EVENTS"  "{" upper_case_param_list"}" )
-    output_events:               ("OUTPUT_EVENTS" "{" upper_case_param_list"}" ) 
-    get_state_events:            ("GET_STATE_EVENTS" "{" upper_case_param_list"}" ) 
-
-    equivalent_list:             ( "{" equivalent+  "}")
-    equivalent:                  ( NAME "=" equivalent_item)  
-    equivalent_item:             (event| event_list |extended_variable_name)
+            ?sum_str: atom_string
+                | sum_str "+" symbol   -> add_string
+            ?atom_string: QUOTED_STRING    -> get_string
+                | symbol            
                                   
-    attributes :                  ("ATTRIBUTES" "{" attribute_list "}")
-    attribute_list:              ([NAME ("," NAME)*])
+                       
+            symbol:regular_symbol
+                 | template_symbol
+
+                       
+            regular_symbol: NAME ("." NAME)* ("::" NAME)*
+            template_symbol: "<" regular_symbol ">"
+
+            function:   NAME "(" parameter_list ")"
+
+
+            HEX_NUMBER :                  (("0x"|"0X") (HEXDIGIT)+) 
+            QUOTED_STRING:               /"[^"]*"/
+            NAME:                        ((LETTER) ("_"|LETTER|INT)*)
+
   
+                                          
+            COMMENT:                     /#.*?\\n/
+            %ignore COMMENT
+            
+            %import common.WS          -> WS
+            %ignore WS
                                   
-    event_list:                  (event ("," event)*)
-    event:                       (ccan_event|not_ccan_event)
-    
-    
-    ccan_event:                  ((extended_name|template_symbol) "::" EVENT_NAME "(" param_list ")" )
-    not_ccan_event:              ( PROTOCOL_NAME "(" var_expression ")" "::"  EVENT_NAME "(" param_list ")" )
-
-    upper_case_param_list:       [upper_case_param ("," upper_case_param)*]  
-    upper_case_param:            (UPPER_CASE_VARNAME "(" [param_def_list] ")" )
-  
-    extended_name:				  (DNAME ("." DNAME)*)  
- 
-    status_variables_description:  ("STATUS_VARIABLES" "{" param_def_list "}" )
-
-    degradation_codes_description:("DEGRADATION_CODES" "{" degradation_code_list "}")
-    degradation_code_list:       [degradation_code (degradation_code)*]
-    degradation_code:            (NAME QUOTED_STRING)
-
-    param_def_list:              ([param_def ("," param_def)*]) 
-    param_def:                   ( PARAM_NAME "<" PARAM_TYPE ["::" "[" parameter_constraints "]" ] ["," "default" "=" arg]">")
- 
-    param_list:                  [ var_expression ("," var_expression)*] 
-    var_expression:              ([PARAM_NAME "="] arg)
-    parameter_constraints:        (enumeration_of_allowed_parameters|list_of_allowed_parameters)
-    enumeration_of_allowed_parameters: (arg ".." arg)
-    list_of_allowed_parameters:     (arg ["," arg]*) 
-
-    variable_name:               (DNAME "::" DNAME)
-    extended_variable_name:      ((extended_name|template_symbol) "::" DNAME)  
-
-    symbol:  simple_symbol| template_symbol
-
-    arg:     sum           -> argument
-           | sum_str       -> string_argument
-  
-    ?sum: product 
-        | sum "+" product   -> add_func
-        | sum "-" product   -> sub_func
-        | sum "&" product   -> and_func
-        | sum "|" product   -> or_func
-      
-    ?product: atom
-        | product "*" atom  -> mul_func    
-        | product "/" atom  -> div_func
-        | product "^" atom  -> pow_func
-        | "(" sum ")"
-
-    ?atom: NUMBER               -> number     
-         | hex                  -> hex_number
-         | "-" atom             -> neg_func      
-         | "(" sum ")"
-         | ALIAS                -> alias
-         | event_parameter
-         | variable             
-         | symbol   
-         | function
-                   
-
-    ?sum_str: atom_string 
-        | sum_str "+" atom_string  -> add
-    ?atom_string: QUOTED_STRING    -> get_string
-        | ALIAS_STRING             -> alias
+            %import common.HEXDIGIT    -> HEXDIGIT
+            %import common.INT         -> INT
+            %import common.LETTER      -> LETTER
+            %import common.NUMBER      -> NUMBER
                                   
-    
-    event_parameter.2:          ("EVENT::" NAME)  
-    variable.2:                 ("VAR::" NAME)              
-    template_symbol:            ( "<" NAME "::" NAME ">")                                  
-    simple_symbol:                     (NAME "::" NAME)   
-    function:                   (CNAME "(" arg_list  ")")
-    arg_list:                   [arg ("," arg)*]
- 
-    hex.2 : HEXNUMBER
-    OPERATOR:                    ("*"|"+"|"-"|"/")
-
-    
-    UCASE_CNAME:                 (UCASE) ("_"|UCASE|DIGIT)*
-    LCASE_CNAME:                 (LCASE) ("_"|LCASE|DIGIT)*
-    
-    PARAM_NAME:                  DNAME  
-    NAME:                        CNAME   
-    QUOTED_STRING:               /"[^"]*"/
-    HEXNUMBER :                  (("0x"|"0X") ("0".."9" | "A".."F" | "a".."f")+)  
-
-    ALIAS: (CNAME)
-    ALIAS_STRING: (CNAME)
-
-    EVENT_NAME: (LETTER|DIGIT) ("_"|LETTER|DIGIT)*
-                                  
-    PROTOCOL_NAME:               UCASE_CNAME
-    DRIVER_TYPE:                 UCASE_CNAME
-    DRIVER_NAME:                 UCASE_CNAME
-    TYPE_NAME:                   UCASE_CNAME
-    PIN_NAME:                    UCASE_CNAME
-    ALIAS_NAME:                  CNAME
-    TYPE:                        CNAME
-    FROM_NAME:                   CNAME
-    TO_NAME:                     CNAME
-   
-    
-
-    DESCRIPTOR_NAME:             DNAME   
-
-    PARAM_TYPE:                  (UCASE) ("_"|UCASE|DIGIT)*
-    UPPER_CASE_VARNAME:          (UCASE) ("_"|UCASE|DIGIT)* 
-    PATHNAME :                   (DNAME ["/" DNAME]*)
-   
-    DNAME:                       ((LETTER) ("_"|LETTER|NUMBER)*)   
         
-    COMMENT:                     /#.*?\\n/
-    %ignore COMMENT
+
+        
+            ''', parser='earley', propagate_positions=True)        
+
+
+    def parse(self,base_filename, include_path):
+        self.__include_path = include_path
+        
+        if os.path.basename(base_filename) is not None:
+            filename = base_filename + ".ccan"
+            try:
+                text_file = open(filename, "r")
+                text = text_file.read()
+                
+            except FileNotFoundError:
+                raise ResolverError(None,f"Could not find configuration file {filename}.")
+                if  self.__current_file is None:
+                    print("Could not find configuration file " + filename)
+                else:
+                    print("Could not find configuration file" + filename + ", included in " + self.__current_file)
+                return None
+        else:
+            found = True
+            for path in include_path:
+                filename =  path + base_filename + ".ccan"
+                found = True
+                try:
+                    text_file = open(filename, "r")
+                    text = text_file.read()
+                except FileNotFoundError:
+                   found = False
+                
+                if found is True:
+                   break
+            
+            if found is False:
+                if  self.__current_file is None:
+                    print("Could not find configuration file " + filename)
+                else:
+                    print("Could not find configuration file" + filename + ", included in " + self.__current_file)
+                return None
+        
+        self.__current_file = filename    
+        try:           
+            tree = self.__parser.parse(text)
+        except lark.exceptions.VisitError as e:
+            location = LocationInfo(filename+".ccan",e.line, e.column)      
+        except lark.exceptions.UnexpectedCharacters as e: 
+            location = LocationInfo(filename,e.line, e.column)
+
+            #print(filename + ": " +str(e.line)+":" +str(e.column) + " Syntax error")
+            raise ResolverError(location,"Syntax error detected. Found unexpected character: '" + e.char + "'.")      
+
+            #print(filename + ": " +str(e.line)+":" +str(e.column) + " Syntax error")
+            raise ResolverError(location,"Syntax error detected. Found unexpected character: '" + e.char + "'.")  
+        parsed_list = self.transform(tree)
+        return parsed_list
+
+
+
  
-    %import common.CNAME    -> CNAME
-    %import common.WORD   -> WORD
-    %import common.DIGIT   -> DIGIT
-    %import common.LETTER   -> LETTER
-    %import common.LCASE_LETTER   -> LCASE
-    %import common.UCASE_LETTER   -> UCASE        
-    %import common.ESCAPED_STRING   -> STRING
-    %import common.SIGNED_NUMBER    -> NUMBER
-    %import common.WS                -> WS
-    %ignore WS
-   
-    ''', parser='earley', propagate_positions=True)
-
-
-#     UNBRACKETED_VALUE:           (NUMBER|PARAM_VALUE|QUOTED_STRING)
-#    PARAM_VALUE:                 (DNAME|HEXNUMBER|NUMBER|WORD|"::"|STRING)+
-
-
-#    pseudo_pin:                   ( PIN_NAME"::" DRIVER_NAME "(" param_list ")" ["->"  "(" param_list ")"] ("transports"|"TRANSPORTS") PROTOCOL_NAME )  
-
 
 
     # https://github.com/lark-parser/lark/blob/master/lark/grammars/common.lark
@@ -274,9 +245,8 @@ class TransformingParser(Transformer):
         r =  r.replace('"','')
         return r
 
-    def add_string(self,arg1,arg2):
-        result = arg2
-        return result
+    def add_string(self,arg1,arg2):      
+        return arg1+arg2
 
     def hex_number(self,value):
         return int(value.children[0],16)
@@ -616,10 +586,9 @@ class TransformingParser(Transformer):
         protocol_name = str(matches[0])
         adapter_name  = str(matches[1])
         param_def_list = matches[2]
-      
-        degradation_description_list = matches[3]
-        connection_description_list  = matches[4]
-
+        connection_description_list  = matches[3]
+        degradation_description_list = matches[4]
+ 
         return ParsedTransportAdapterDescription(type   = protocol_name, 
                                                  name   = adapter_name,
                                                  parameter_description_list = param_def_list,                                                
@@ -1305,61 +1274,6 @@ class TransformingParser(Transformer):
     def expression(self,matches):
         text= str(matches)
         return text
-
-
-    def parse(self,base_filename, include_path):
-        self.__include_path = include_path
-        
-        if os.path.basename(base_filename) is not None:
-            filename = base_filename + ".ccan"
-            try:
-                text_file = open(filename, "r")
-                text = text_file.read()
-                
-            except FileNotFoundError:
-                raise ResolverError(None,f"Could not find configuration file {filename}.")
-                if  self.__current_file is None:
-                    print("Could not find configuration file " + filename)
-                else:
-                    print("Could not find configuration file" + filename + ", included in " + self.__current_file)
-                return None
-        else:
-            found = True
-            for path in include_path:
-                filename =  path + base_filename + ".ccan"
-                found = True
-                try:
-                    text_file = open(filename, "r")
-                    text = text_file.read()
-                except FileNotFoundError:
-                   found = False
-                
-                if found is True:
-                   break
-            
-            if found is False:
-                if  self.__current_file is None:
-                    print("Could not find configuration file " + filename)
-                else:
-                    print("Could not find configuration file" + filename + ", included in " + self.__current_file)
-                return None
-        
-        self.__current_file = filename    
-        try:           
-            tree = self.__parser.parse(text)
-        except lark.exceptions.VisitError as e:
-            location = LocationInfo(filename+".ccan",e.line, e.column)      
-        except lark.exceptions.UnexpectedCharacters as e: 
-            location = LocationInfo(filename,e.line, e.column)
-
-            #print(filename + ": " +str(e.line)+":" +str(e.column) + " Syntax error")
-            raise ResolverError(location,"Syntax error detected. Found unexpected character: '" + e.char + "'.")      
-
-            #print(filename + ": " +str(e.line)+":" +str(e.column) + " Syntax error")
-            raise ResolverError(location,"Syntax error detected. Found unexpected character: '" + e.char + "'.")  
-        parsed_list = self.transform(tree)
-        return parsed_list
-
 
 
  

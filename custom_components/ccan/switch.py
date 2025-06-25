@@ -158,9 +158,11 @@ class CCAN_Switch(CoordinatorEntity, SwitchEntity):
     @property
     def unique_id(self) -> str:
         """Return unique id."""
+        suggested_area=self.ha_library.get_device_parameter_value(
+                self.device, "suggested_area")
         # All entities must have a unique id.  Think carefully what you want this to be as
         # changing it later will cause HA to create new entities.
-        return f"{DOMAIN}-{self.device.get_name()}"
+        return f"{DOMAIN}-{suggested_area}--{self._name}"
 
     def get_variables(self):
         return [("STATUS", self.update)]
