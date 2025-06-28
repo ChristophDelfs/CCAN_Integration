@@ -97,7 +97,11 @@ class SocketConnect:
 
     def send(self, my_message, my_address):
         self.__socket.setblocking(True)
-        self.__socket.sendto(my_message, my_address)
+        try:
+            self.__socket.sendto(my_message, my_address)
+        except OSError:
+            # ignore network issues, this shall improve stability
+            return
 
     def get_command(self, message):
         seq = SequenceExtractor(list(message))

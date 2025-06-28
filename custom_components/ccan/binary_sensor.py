@@ -78,7 +78,7 @@ class CCAN_BinarySensorEntity(BinarySensorEntity):
         coordinator: CCAN_Coordinator,
         device: ResolvedHomeAssistantDeviceInstance,
     ) -> None:
-        """Create a CCAN climate device."""
+        """Create a CCAN Reed Contect device."""
         self.coordinator = coordinator
         self.ha_library = coordinator.ha_library
         self.device = device

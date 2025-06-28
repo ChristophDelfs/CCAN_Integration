@@ -246,8 +246,8 @@ class CCAN_Cover(CoverEntity):
             not self.is_stopped and not self.is_open
         ) or self._cover_state == CoverState.UNKNOWN:
             await asyncio.to_thread(self.ha_library.send, self.device, "STOP")
-            while not self.is_stopped:
-                await asyncio.sleep(0.1)
+            self.set_stopped()
+            await asyncio.sleep(0.1)
         await asyncio.to_thread(self.ha_library.send, self.device, "CLOSE")
         self.async_write_ha_state()
 
@@ -258,8 +258,8 @@ class CCAN_Cover(CoverEntity):
             not self.is_stopped and not self.is_closed
         ) or self._cover_state == CoverState.UNKNOWN:
             await asyncio.to_thread(self.ha_library.send, self.device, "STOP")
-            while not self.is_stopped:
-                await asyncio.sleep(0.1)
+            self.set_stopped()
+            await asyncio.sleep(0.1)
         await asyncio.to_thread(self.ha_library.send, self.device, "OPEN")
         self.async_write_ha_state()
 
