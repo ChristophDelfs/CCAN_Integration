@@ -218,7 +218,7 @@ class CCAN_Voltage_Sensor(CCAN_Sensor):
         if value > -100 and value < 100:
             self._value = value
             print("new voltage received:", value)
-            self.schedule_update_ha_state()
+            # self.schedule_update_ha_state()
 
     def get_variables(self):
         return [("VOLTAGE", self.update)]
