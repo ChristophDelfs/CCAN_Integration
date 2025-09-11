@@ -98,8 +98,8 @@ class CCAN_Climate(ClimateEntity):
     _attr_target_temperature_low: float | None = None
     _attr_target_temperature_high: float | None = None
     _attr_name = None
-    _attr_min_temp = 18
-    _attr_max_temp = 25
+    _attr_min_temp = 17
+    _attr_max_temp = 26
     _enable_turn_on_off_backwards_compatibility = False
 
     def __init__(
@@ -269,19 +269,19 @@ class CCAN_Climate(ClimateEntity):
 
     @property
     def min_temp(self) -> int | None:
-        return 18
+        return 17
 
     @property
     def max_temp(self) -> int | None:
-        return 25
+        return 26
 
     @property
     def target_temperature_high(self) -> int | None:
-        return 25
+        return 26
 
     @property
     def target_temperature_low(self) -> int | None:
-        return 18
+        return 17
 
     @property
     def target_temperature(self) -> int | None:
