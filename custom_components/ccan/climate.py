@@ -98,6 +98,8 @@ class CCAN_Climate(ClimateEntity):
     _attr_target_temperature_low: float | None = None
     _attr_target_temperature_high: float | None = None
     _attr_name = None
+    _attr_min_temp = 18
+    _attr_max_temp = 25
     _enable_turn_on_off_backwards_compatibility = False
 
     def __init__(
@@ -217,9 +219,11 @@ class CCAN_Climate(ClimateEntity):
         return self._current_temperature
 
     def set_heating_state_on(self, **kwargs: Any):
+        print("Heizung jetzt eingeschaltet.")
         self.set_heating_state(True)
 
     def set_heating_state_off(self, **kwargs: Any):
+        print("Heizung jetzt aus.")
         self.set_heating_state(False)
 
     def set_heating_state(self, my_state):
@@ -227,9 +231,11 @@ class CCAN_Climate(ClimateEntity):
         self.update_hvac_mode()
 
     def set_heating_is_passive(self, **kwargs: Any):
+        print("Heizung im passiven MOdus")
         self.set_heating_active_state(False)
 
     def set_heating_is_active(self, **kwargs: Any):
+        print("Heizung ist im aktiven Zustand")
         self.set_heating_active_state(True)
 
     def set_heating_active_state(self, my_state):
@@ -262,12 +268,20 @@ class CCAN_Climate(ClimateEntity):
         self.update_hvac_mode()
 
     @property
+    def min_temp(self) -> int | None:
+        return 18
+
+    @property
+    def max_temp(self) -> int | None:
+        return 25
+
+    @property
     def target_temperature_high(self) -> int | None:
         return 25
 
     @property
     def target_temperature_low(self) -> int | None:
-        return 17
+        return 18
 
     @property
     def target_temperature(self) -> int | None:
@@ -309,10 +323,12 @@ class CCAN_Climate(ClimateEntity):
 
     async def async_turn_off(self) -> None:
         """Turn off."""
+        print("Turning off")
         await asyncio.to_thread(self.ha_library.send, self.device, "TURN_OFF")
 
     async def async_turn_on(self) -> None:
         """Turn on."""
+        print("Turning on..")
         await asyncio.to_thread(self.ha_library.send, self.device, "TURN_ON")
 
     # @property
