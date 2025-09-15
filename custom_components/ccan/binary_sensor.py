@@ -198,7 +198,7 @@ class CCAN_MotionSensor(BinarySensorEntity):
 
         self._name = self.ha_library.get_device_parameter_value(device, "name")
 
-        events = self.ha_library.get_symbolic_event(self.device, "MOTION_DETECTED")
+        events = self.ha_library.get_symbolic_event(self.device, "NEW_MOTION_DETECTED")
         for event in events:
             self.coordinator.add_listening_event(event, self.set_motion_detected)
 
@@ -243,7 +243,7 @@ class CCAN_MotionSensor(BinarySensorEntity):
     @property
     def is_on(self) -> bool:
         """Return true if sensor state is on."""
-        return not self._motion
+        return self._motion
 
     @property
     def name(self) -> str:
@@ -252,11 +252,11 @@ class CCAN_MotionSensor(BinarySensorEntity):
 
     def set_motion_state(self, value) -> None:
         self._motion = value
-        print(f"Bewegung {self._motion}")
+        print(f"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx Bewegung {self._motion}")
         self.schedule_update_ha_state()
 
     def set_no_motion_detected(self, **kwargs: Any) -> None:
-        self.set_motion_state(True)
+        self.set_motion_state(False)
 
     def set_motion_detected(self, **kwargs: Any) -> None:
-        self.set_motion_state(False)
+        self.set_motion_state(True)
