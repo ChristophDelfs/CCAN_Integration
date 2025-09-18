@@ -88,7 +88,7 @@ async def async_setup_entry(
     async_add_entities(motion_sensors)
     _LOGGER.info("Added %d motion sensors", len(motion_sensors))
 
-    async_add_entities(motion_sensors)
+    async_add_entities(button_sensors)
     _LOGGER.info("Added %d button sensors", len(button_sensors))
 
 
@@ -96,30 +96,17 @@ class CCAN_BinarySensorEntity(BinarySensorEntity):
     """Represent a block binary sensor entity."""
 
     def __init__(
-        self,
-        coordinator: CCAN_Coordinator,
-        device: ResolvedHomeAssistantDeviceInstance,
+        self, coordinator: CCAN_Coordinator, device: ResolvedHomeAssistantDeviceInstance
     ) -> None:
         """Create a CCAN Reed Contect device."""
         self.coordinator = coordinator
         self.ha_library = coordinator.ha_library
         self.device = device
 
-        self._closed = None
-
         self._name = self.ha_library.get_device_parameter_value(device, "name")
 
-        events = self.ha_library.get_symbolic_event(self.device, "OPEN")
-        for event in events:
-            self.coordinator.add_listening_event(event, self.set_window_open)
-
-        events = self.ha_library.get_symbolic_event(self.device, "CLOSED")
-        for event in events:
-            self.coordinator.add_listening_event(
-                event,
-                self.set_window_closed,
-            )
-
+        self._state = None
+        self.add_listeners()
         self.coordinator.register_entity(self)
 
     @property
@@ -128,7 +115,7 @@ class CCAN_BinarySensorEntity(BinarySensorEntity):
         return DeviceInfo(
             name=self._name,
             manufacturer="",
-            model="Reedkontakt",
+            model="Binärsensor",
             sw_version="1.0",
             identifiers={
                 (
@@ -148,34 +135,31 @@ class CCAN_BinarySensorEntity(BinarySensorEntity):
         # changing it later will cause HA to create new entities.
         return f"{DOMAIN}-{self.device.get_name()}"
 
-    def get_variables(self):
-        return [("STATUS", self.set_window_state)]
-
     @property
     def available(self) -> bool:
         """Return the availability of the entity."""
-        return self._closed != None
+        return self._state is not None
 
     @property
     def is_on(self) -> bool:
         """Return true if sensor state is on."""
-        return not self._closed
+        return not self._state
 
     @property
     def name(self) -> str:
         """Return the display name of this sensor."""
         return self._name
 
-    def set_window_state(self, value) -> None:
-        self._closed = value
-        print(f"Fenster {self._closed}")
+    def set_state(self, value) -> None:
+        self._state = value
+        print(f"Binary Sensor  {self._name} : {self._state}")
         self.schedule_update_ha_state()
 
-    def set_window_closed(self, **kwargs: Any) -> None:
-        self.set_window_state(True)
+    def set_state_on(self, **kwargs: Any) -> None:
+        self.set_state(True)
 
-    def set_window_open(self, **kwargs: Any) -> None:
-        self.set_window_state(False)
+    def set_state_off(self, **kwargs: Any) -> None:
+        self.set_state(False)
 
 
 class CCAN_WindowSensor(CCAN_BinarySensorEntity):
@@ -183,173 +167,77 @@ class CCAN_WindowSensor(CCAN_BinarySensorEntity):
 
     _attr_device_class = BinarySensorDeviceClass.WINDOW
 
+    def add_listeners(self):
+        events = self.ha_library.get_symbolic_event(self.device, "OPEN")
+        for event in events:
+            self.coordinator.add_listening_event(event, self.set_state_off)
+
+        events = self.ha_library.get_symbolic_event(self.device, "CLOSED")
+        for event in events:
+            self.coordinator.add_listening_event(
+                event,
+                self.set_state_on,
+            )
+
+    def get_variables(self):
+        return [("STATUS", self.set_state)]
+
 
 class CCAN_DoorSensor(CCAN_BinarySensorEntity):
     """Represent a door binary sensor entity."""
 
     _attr_device_class = BinarySensorDeviceClass.DOOR
 
+    def add_listeners(self):
+        events = self.ha_library.get_symbolic_event(self.device, "OPEN")
+        for event in events:
+            self.coordinator.add_listening_event(event, self.set_state_off)
 
-class CCAN_MotionSensor(BinarySensorEntity):
+        events = self.ha_library.get_symbolic_event(self.device, "CLOSED")
+        for event in events:
+            self.coordinator.add_listening_event(
+                event,
+                self.set_state_on,
+            )
+
+    def get_variables(self):
+        return [("STATUS", self.set_state)]
+
+
+class CCAN_MotionSensor(CCAN_BinarySensorEntity):
     """Represent a block binary sensor entity."""
 
     _attr_device_class = BinarySensorDeviceClass.MOTION
 
-    def __init__(
-        self,
-        coordinator: CCAN_Coordinator,
-        device: ResolvedHomeAssistantDeviceInstance,
-    ) -> None:
-        """Create a CCAN Motion device."""
-        self.coordinator = coordinator
-        self.ha_library = coordinator.ha_library
-        self.device = device
-
-        self._motion = None
-
-        self._name = self.ha_library.get_device_parameter_value(device, "name")
-
+    def add_listeners(self):
         events = self.ha_library.get_symbolic_event(self.device, "NEW_MOTION_DETECTED")
         for event in events:
-            self.coordinator.add_listening_event(event, self.set_motion_detected)
+            self.coordinator.add_listening_event(event, self.set_state_on)
 
         events = self.ha_library.get_symbolic_event(self.device, "MOTION_COMPLETED")
         for event in events:
             self.coordinator.add_listening_event(
                 event,
-                self.set_no_motion_detected,
+                self.set_state_off,
             )
-        self.coordinator.register_entity(self)
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return device information."""
-        return DeviceInfo(
-            name=self._name,
-            manufacturer="",
-            model="Motion Sensor",
-            sw_version="1.0",
-            identifiers={
-                (
-                    DOMAIN,
-                    f"{self.device.get_name()}",
-                )
-            },
-            suggested_area=self.ha_library.get_device_parameter_value(
-                self.device, "suggested_area"
-            ),
-        )
-
-    @property
-    def unique_id(self) -> str:
-        """Return unique id."""
-        # All entities must have a unique id.  Think carefully what you want this to be as
-        # changing it later will cause HA to create new entities.
-        return f"{DOMAIN}-{self.device.get_name()}"
 
     def get_variables(self):
-        return [("MOTION_ACTIVE", self.set_motion_state)]
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if sensor state is on."""
-        return self._motion
-
-    @property
-    def name(self) -> str:
-        """Return the display name of this sensor."""
-        return self._name
-
-    def set_motion_state(self, value) -> None:
-        self._motion = value
-        print(f"Bewegung {self._motion}")
-        self.schedule_update_ha_state()
-
-    def set_no_motion_detected(self, **kwargs: Any) -> None:
-        self.set_motion_state(False)
-
-    def set_motion_detected(self, **kwargs: Any) -> None:
-        self.set_motion_state(True)
+        return [("MOTION_ACTIVE", self.set_state)]
 
 
-class CCAN_ButtonSensor(BinarySensorEntity):
+class CCAN_ButtonSensor(CCAN_BinarySensorEntity):
     """Represent a block binary sensor entity."""
 
     _attr_device_class = None  # BinarySensorDeviceClass
 
-    def __init__(
-        self,
-        coordinator: CCAN_Coordinator,
-        device: ResolvedHomeAssistantDeviceInstance,
-    ) -> None:
-        """Create a CCAN Motion device."""
-        self.coordinator = coordinator
-        self.ha_library = coordinator.ha_library
-        self.device = device
-
-        self._pressed = None
-
-        self._name = self.ha_library.get_device_parameter_value(device, "name")
-
+    def add_listeners(self):
         events = self.ha_library.get_symbolic_event(self.device, "PRESSED")
         for event in events:
-            self.coordinator.add_listening_event(event, self.set_button_pressed)
+            self.coordinator.add_listening_event(event, self.set_state_on)
 
         events = self.ha_library.get_symbolic_event(self.device, "RELEASED")
         for event in events:
-            self.coordinator.add_listening_event(
-                event,
-                self.set_button_released,
-            )
-
-        self.coordinator.register_entity(self)
-
-    @property
-    def device_info(self) -> DeviceInfo:
-        """Return device information."""
-        return DeviceInfo(
-            name=self._name,
-            manufacturer="",
-            model="Button Sensor",
-            sw_version="1.0",
-            identifiers={
-                (
-                    DOMAIN,
-                    f"{self.device.get_name()}",
-                )
-            },
-            suggested_area=self.ha_library.get_device_parameter_value(
-                self.device, "suggested_area"
-            ),
-        )
-
-    @property
-    def unique_id(self) -> str:
-        """Return unique id."""
-        # All entities must have a unique id.  Think carefully what you want this to be as
-        # changing it later will cause HA to create new entities.
-        return f"{DOMAIN}-{self.device.get_name()}"
+            self.coordinator.add_listening_event(event, self.set_state_off)
 
     def get_variables(self):
-        return [("STATE", self.set_button_state)]
-
-    @property
-    def is_on(self) -> bool:
-        """Return true if sensor state is on."""
-        return self._pressed
-
-    @property
-    def name(self) -> str:
-        """Return the display name of this sensor."""
-        return self._name
-
-    def set_button_state(self, value) -> None:
-        self._pressed = value
-        print(f"Button gedrückt {self._pressed}")
-        # self.schedule_update_ha_state()
-
-    def set_button_released(self, **kwargs: Any) -> None:
-        self.set_button_state(False)
-
-    def set_button_pressed(self, **kwargs: Any) -> None:
-        self.set_button_state(True)
+        return [("STATE", self.set_state)]
