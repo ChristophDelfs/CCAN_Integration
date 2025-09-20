@@ -322,3 +322,5 @@ class CCAN_Coordinator(DataUpdateCoordinator):
             except CCAN_Error as ex:
                 if ex.get_code() != CCAN_ErrorCode.TIME_OUT:
                     _LOGGER.error("CCAN Thread with unexpected error: %s", str(ex))
+            except Exception as ex:
+                _LOGGER.error("CCAN Thread with unexpected error: %s", str(ex))
