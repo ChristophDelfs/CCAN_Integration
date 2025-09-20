@@ -276,7 +276,7 @@ class CCAN_Coordinator(DataUpdateCoordinator):
         # binary representation (faster to)
         list_of_binary_events = self.connector.resolve_event_list(list_of_events)
         time2 = datetime.now()
-        _LOGGER.warning(
+        _LOGGER.info(
             "Conversion time for listening events took %s seconds",
             (time2 - time1).total_seconds(),
         )
